@@ -52,10 +52,9 @@
                           // logged in and connected user, someone you know
                           top.location.href = "{{=landing_url}}";
                           } else {
-                          var login_url = "https://graph.facebook.com/oauth/authorize?scope=user_photos,publish_stream&redirect_uri=http://apps.facebook.com/antivirusheroes/init/default/quiz/&client_id=139729456078929";
                           // no user session available, someone you dont know
                           //alert("I don't know you. Gonna let you in first.");
-                          top.location.href = login_url;
+                          top.location.href = {{=login_url}};
                       }
                   });
                 };

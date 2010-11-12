@@ -14,14 +14,11 @@ def index():
     example action using the internationalization operator T and flash
     rendered by views/default/index.html or views/generic.html
     """
-    from urllib import urlencode
+    from urllib import urlencode, unquote_plus
     landing_url = APP_URL+URL(c='default', f='quiz')
-    print landing_url
     query = dict(client_id = CLIENT_ID, scope=APP_SCOPE, 
             redirect_uri=landing_url)
-    print query
-    login_url=FB_AUTH_URL + urlencode(query)
-    print login_url
+    login_url=unquote(FB_AUTH_URL + urlencode(query))
     return dict(login_url = login_url, landing_url = landing_url)
 
 def quiz():
