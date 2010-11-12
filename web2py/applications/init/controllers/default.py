@@ -78,7 +78,12 @@ def showResult():
                                 learned a couple things but you end up loosing those \
                                 things by next time. On the plus side, however, The \
                                 Fonz is your guiding spirit.'
-                        }
+                        },
+                'Lois':{
+                    'name': 'Lois',
+                    'pic': URL(c='static', f='pics/lois.jpg'),
+                    'description':''
+                    }
                 }
 
     score = {'Peter': 0,
@@ -94,7 +99,7 @@ def showResult():
         elif answer == 'a3':
             score['Brian']  = score['Brian'] + 1
         elif answer == 'a4':
-            score['Chris']  = score['Chris'] + 1
+            score['Stewie']  = score['Stewie'] + 1
     character = characters[findMaxScore(score)]
     return DIV(B('You are %s.' % character['name']), BR(), 
             IMG(_src=character['pic'], _height=320), BR(),
