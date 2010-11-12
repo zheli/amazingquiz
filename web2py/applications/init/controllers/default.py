@@ -9,6 +9,7 @@
 from facebook import GraphAPI, GraphAPIError
 from fb_helpers import parse_signed_request
 from fbappauth import *
+
 def index():
     """
     example action using the internationalization operator T and flash
@@ -19,7 +20,8 @@ def index():
     query = dict(client_id = CLIENT_ID, scope=APP_SCOPE, 
             redirect_uri=landing_url)
     login_url=unquote_plus(FB_AUTH_URL + urlencode(query))
-    return dict(login_url = login_url, landing_url = landing_url)
+    return dict(client_id = CLIENT_ID, login_url = XML(login_url), 
+            landing_url = landing_url)
 
 def quiz():
     return dict()

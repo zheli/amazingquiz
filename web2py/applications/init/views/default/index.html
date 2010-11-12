@@ -43,7 +43,7 @@
         <div id="fb-root"></div>
         <script>
               window.fbAsyncInit = function() {
-                  FB.init({appId: '139729456078929', status: true, cookie: true,
+                  FB.init({appId: '{{=client_id}}', status: true, cookie: true,
                       logging : true, xfbml: true});
                   FB.getLoginStatus(function(response) {
                       //alert("your status: " + response.status);
@@ -54,7 +54,7 @@
                           } else {
                           // no user session available, someone you dont know
                           //alert("I don't know you. Gonna let you in first.");
-                          top.location.href = {{=login_url}};
+                          top.location.href = "{{=login_url}}";
                       }
                   });
                 };
