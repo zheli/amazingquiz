@@ -18,7 +18,7 @@ def index():
     landing_url = APP_URL+URL(c='default', f='quiz')
     query = dict(client_id = CLIENT_ID, scope=APP_SCOPE, 
             redirect_uri=landing_url)
-    login_url=unquote(FB_AUTH_URL + urlencode(query))
+    login_url=unquote_plus(FB_AUTH_URL + urlencode(query))
     return dict(login_url = login_url, landing_url = landing_url)
 
 def quiz():
