@@ -1,0 +1,586 @@
+(dp1
+S'output'
+p2
+S''
+sS'layer'
+p3
+S'/home/zhe/codes/awesomequiz/web2py/applications/init/controllers/post.py'
+p4
+sS'code'
+p5
+S'# -*- coding: utf-8 -*-\nfrom facebook import GraphAPI, GraphAPIError\n\n@auth.requires_login()\ndef index():\n    user = auth.user\n    graph = getGraph()\n    try:\n        graph.put_object(\'me\', \'feed\', \'This is so awesome!\')\n    except GraphAPIError, e:\n        response.flash = "%s [%s: %s]" % (T("Logging you out!"),__name__, e)\n        redirect(auth.url(f=\'user\', args=\'logout\'))\n\n    return True\n\nresponse._vars=response._caller(index)\n'
+p6
+sS'snapshot'
+p7
+(dp8
+S'exception'
+p9
+(dp10
+S'__hash__'
+p11
+S"<method-wrapper '__hash__' of exceptions.TypeError object>"
+p12
+sS'__setattr__'
+p13
+S"<method-wrapper '__setattr__' of exceptions.TypeError object>"
+p14
+sS'__reduce_ex__'
+p15
+S'<built-in method __reduce_ex__ of exceptions.TypeError object>'
+p16
+sS'__getslice__'
+p17
+S"<method-wrapper '__getslice__' of exceptions.TypeError object>"
+p18
+sS'__getitem__'
+p19
+S"<method-wrapper '__getitem__' of exceptions.TypeError object>"
+p20
+sS'__setstate__'
+p21
+S'<built-in method __setstate__ of exceptions.TypeError object>'
+p22
+sS'__reduce__'
+p23
+S'<built-in method __reduce__ of exceptions.TypeError object>'
+p24
+sS'__str__'
+p25
+S"<method-wrapper '__str__' of exceptions.TypeError object>"
+p26
+sS'__format__'
+p27
+S'<built-in method __format__ of exceptions.TypeError object>'
+p28
+sS'__getattribute__'
+p29
+S"<method-wrapper '__getattribute__' of exceptions.TypeError object>"
+p30
+sS'__class__'
+p31
+S"<type 'exceptions.TypeError'>"
+p32
+sS'__unicode__'
+p33
+S'<built-in method __unicode__ of exceptions.TypeError object>'
+p34
+sS'__delattr__'
+p35
+S"<method-wrapper '__delattr__' of exceptions.TypeError object>"
+p36
+sS'__subclasshook__'
+p37
+S'<built-in method __subclasshook__ of type object>'
+p38
+sS'__repr__'
+p39
+S"<method-wrapper '__repr__' of exceptions.TypeError object>"
+p40
+sS'args'
+p41
+S"('put_object() takes exactly 3 arguments (4 given)',)"
+p42
+sS'__dict__'
+p43
+S'{}'
+p44
+sS'__sizeof__'
+p45
+S'<built-in method __sizeof__ of exceptions.TypeError object>'
+p46
+sS'__doc__'
+p47
+S"'Inappropriate argument type.'"
+p48
+sS'__init__'
+p49
+S"<method-wrapper '__init__' of exceptions.TypeError object>"
+p50
+sS'__new__'
+p51
+S'<built-in method __new__ of type object>'
+p52
+ssS'evalue'
+p53
+S'put_object() takes exactly 3 arguments (4 given)'
+p54
+sS'request'
+p55
+(dp56
+S'function'
+p57
+S"'index'"
+p58
+sS'body'
+p59
+S'<cStringIO.StringO object>'
+p60
+sS'wsgi'
+p61
+S"<Storage {'start_response': <function <lambda> a...>, 'HTTP_ACCEPT_ENCODING': 'gzip,deflate,sdch'}}>"
+p62
+sS'extension'
+p63
+S"'html'"
+p64
+sS'vars'
+p65
+S'<Storage {}>'
+p66
+sS'cid'
+p67
+S'None'
+p68
+sS'url'
+p69
+S'<gluon.html.XML object>'
+p70
+sg41
+S'[]'
+p71
+sS'controller'
+p72
+S"'post'"
+p73
+sS'cookies'
+p74
+S"<SimpleCookie: session_id_init='127-0-0-1-295a9fd8-3f59-4fd8-8579-4dfb8d4d9bd1'>"
+p75
+sS'application'
+p76
+S"'init'"
+p77
+sS'ajax'
+p78
+S'False'
+p79
+sS'client'
+p80
+S"'127.0.0.1'"
+p81
+sS'env'
+p82
+S"<Storage {'http_user_agent': 'Mozilla/5.0 (X11; ...ch', 'query_string': '', 'wsgi_run_once': False}>"
+p83
+sS'raw_args'
+p84
+S'None'
+p85
+sS'get_vars'
+p86
+S'<Storage {}>'
+p87
+sS'folder'
+p88
+S"'/home/zhe/codes/awesomequiz/web2py/applications/init/'"
+p89
+sS'now'
+p90
+S'datetime.datetime(2010, 11, 4, 21, 57, 25, 951556)'
+p91
+sS'post_vars'
+p92
+S'<Storage {}>'
+p93
+ssS'frames'
+p94
+(lp95
+(dp96
+S'file'
+p97
+S'/home/zhe/codes/awesomequiz/web2py/gluon/restricted.py'
+p98
+sS'dump'
+p99
+(dp100
+S'environment'
+p101
+S"{'A': <class 'gluon.html.A'>, 'Auth': <class 'gluon.tools.Auth'>, 'B': <class 'gluon.html.B'>, 'BEAUTIFY': <class 'gluon.html.BEAUTIFY'>, 'BODY': <class 'gluon.html.BODY'>, 'BR': <class 'gluon.html.BR'>, 'CENTER': <class 'gluon.html.CENTER'>, 'CLEANUP': <class 'gluon.validators.CLEANUP'>, 'CLIENT_ID': '171657759516876', 'CLIENT_SECRET': '1ab56c84a1d338972c8786e49eaa7247', ...}"
+p102
+sS'ccode'
+p103
+S'<code object <module> at 0xa3ea068, file "/home/...y/applications/init/controllers/post.py", line 2>'
+p104
+ssS'lnum'
+p105
+I188
+sS'lines'
+p106
+(dp107
+I192
+S'        # XXX Show exception in Wing IDE if running in debugger'
+p108
+sI183
+S'        if type(code) == types.CodeType:'
+p109
+sI184
+S'            ccode = code'
+p110
+sI185
+S'        else:'
+p111
+sI186
+S'            ccode = compile2(code,layer)'
+p112
+sI187
+S''
+sI188
+S'        exec ccode in environment'
+p113
+sI189
+S'    except HTTP:'
+p114
+sI190
+S'        raise'
+p115
+sI191
+S'    except Exception:'
+p116
+ssS'call'
+p117
+S"(code='# -*- coding: utf-8 -*-\\nfrom facebook import Gra...urn True\\n\\nresponse._vars=response._caller(index)\\n', environment={'A': <class 'gluon.html.A'>, 'Auth': <class 'gluon.tools.Auth'>, 'B': <class 'gluon.html.B'>, 'BEAUTIFY': <class 'gluon.html.BEAUTIFY'>, 'BODY': <class 'gluon.html.BODY'>, 'BR': <class 'gluon.html.BR'>, 'CENTER': <class 'gluon.html.CENTER'>, 'CLEANUP': <class 'gluon.validators.CLEANUP'>, 'CLIENT_ID': '171657759516876', 'CLIENT_SECRET': '1ab56c84a1d338972c8786e49eaa7247', ...}, layer='/home/zhe/codes/awesomequiz/web2py/applications/init/controllers/post.py')"
+p118
+sS'func'
+p119
+S'restricted'
+p120
+sa(dp121
+g97
+S'/home/zhe/codes/awesomequiz/web2py/applications/init/controllers/post.py'
+p122
+sg99
+(dp123
+sg105
+I16
+sg106
+(dp124
+I5
+S'def index():'
+p125
+sI6
+S'    user = auth.user'
+p126
+sI7
+S'    graph = getGraph()'
+p127
+sI8
+S'    try:'
+p128
+sI9
+S"        graph.put_object('me', 'feed', 'This is so awesome!')"
+p129
+sI10
+S'    except GraphAPIError, e:'
+p130
+sI11
+S'        response.flash = "%s [%s: %s]" % (T("Logging you out!"),__name__, e)'
+p131
+sI12
+S"        redirect(auth.url(f='user', args='logout'))"
+p132
+sI13
+S''
+sI14
+S'    return True'
+p133
+ssg117
+S'()'
+p134
+sg119
+S'<module>'
+p135
+sa(dp136
+g97
+S'/home/zhe/codes/awesomequiz/web2py/gluon/globals.py'
+p137
+sg99
+(dp138
+S'self'
+p139
+S'undefined'
+p140
+sS'f'
+S'<function index>'
+p141
+ssg105
+I96
+sg106
+(dp142
+I96
+S'        self._caller = lambda f: f()'
+p143
+sI97
+S'        self._view_environment = None'
+p144
+sI98
+S'        self._custom_commit = None'
+p145
+sI99
+S'        self._custom_rollback = None'
+p146
+sI100
+S''
+sI91
+S"        self.flash = ''           # used by the default view layout"
+p147
+sI92
+S'        self.meta = Storage()     # used by web2py_ajax.html'
+p148
+sI93
+S'        self.menu = []            # used by the default view layout'
+p149
+sI94
+S'        self.files = []           # used by web2py_ajax.html'
+p150
+sI95
+S'        self._vars = None'
+p151
+ssg117
+S'(f=<function index>)'
+p152
+sg119
+S'<lambda>'
+p153
+sa(dp154
+g97
+S'/home/zhe/codes/awesomequiz/web2py/gluon/tools.py'
+p155
+sg99
+(dp156
+S'action'
+p157
+S'<function index>'
+p158
+sS'a'
+S'()'
+p159
+sS'b'
+g44
+ssg105
+I2270
+sg106
+(dp160
+I2272
+S'            f.__name__ = action.__name__'
+p161
+sI2273
+S'            f.__dict__.update(action.__dict__)'
+p162
+sI2274
+S'            return f'
+p163
+sI2265
+S'                               vars=request.get_vars)'
+p164
+sI2266
+S'                    return call_or_redirect(self.settings.on_failed_authentication,'
+p165
+sI2267
+S'                                            self.settings.login_url + \\'
+p166
+sI2268
+S"                                                '?_next='+urllib.quote(next)"
+p167
+sI2269
+S'                                            )'
+p168
+sI2270
+S'                return action(*a, **b)'
+p169
+sI2271
+S'            f.__doc__ = action.__doc__'
+p170
+ssg117
+S'(*a=(), **b={})'
+p171
+sg119
+S'f'
+sa(dp172
+g97
+S'/home/zhe/codes/awesomequiz/web2py/applications/init/controllers/post.py'
+p173
+sg99
+(dp174
+S'graph'
+p175
+S'<facebook.GraphAPI object>'
+p176
+sS'graph.put_object'
+p177
+S'<bound method GraphAPI.put_object of <facebook.GraphAPI object>>'
+p178
+ssg105
+I9
+sg106
+(dp179
+I4
+S'@auth.requires_login()'
+p180
+sI5
+S'def index():'
+p181
+sI6
+S'    user = auth.user'
+p182
+sI7
+S'    graph = getGraph()'
+p183
+sI8
+S'    try:'
+p184
+sI9
+S"        graph.put_object('me', 'feed', 'This is so awesome!')"
+p185
+sI10
+S'    except GraphAPIError, e:'
+p186
+sI11
+S'        response.flash = "%s [%s: %s]" % (T("Logging you out!"),__name__, e)'
+p187
+sI12
+S"        redirect(auth.url(f='user', args='logout'))"
+p188
+sI13
+S''
+ssg117
+S'()'
+p189
+sg119
+S'index'
+p190
+sasS'pyver'
+p191
+S'Python 2.6.5: /usr/bin/python'
+p192
+sS'session'
+p193
+(dp194
+S'token'
+p195
+S"{'access_token': '171657759516876|2.00d31xlaQyUqnOQTdzCnyw__.3600.1288908000-326200042|gufxYhoSUM3l5B-23EV3rjhZ5GE', 'expires': '3756'}"
+p196
+sS'flash'
+p197
+S'None'
+p198
+sS'auth'
+p199
+S"<Storage {'expiration': 3600, 'user': <Storage {..., 11, 4, 21, 57, 25, 951556), 'remember': False}>"
+p200
+sS'redirect_uri'
+p201
+S"'http://localhost:8000/init/default/user/login?_next=%2Finit%2Fpost%2Findex'"
+p202
+ssS'etype'
+p203
+S"<type 'exceptions.TypeError'>"
+p204
+sS'date'
+p205
+S'Thu Nov  4 21:57:26 2010'
+p206
+sS'response'
+p207
+(dp208
+S'_vars'
+p209
+S'None'
+p210
+sg74
+S"<SimpleCookie: session_id_init='127-0-0-1-295a9fd8-3f59-4fd8-8579-4dfb8d4d9bd1'>"
+p211
+sS'subtitle'
+p212
+S"<lazyT 'customize me!'>"
+p213
+sS'meta'
+p214
+S'<Storage {}>'
+p215
+sS'_view_environment'
+p216
+S"{'A': <class 'gluon.html.A'>, 'Auth': <class 'gluon.tools.Auth'>, 'B': <class 'gluon.html.B'>, 'BEAUTIFY': <class 'gluon.html.BEAUTIFY'>, 'BODY': <class 'gluon.html.BODY'>, 'BR': <class 'gluon.html.BR'>, 'CENTER': <class 'gluon.html.CENTER'>, 'CLEANUP': <class 'gluon.validators.CLEANUP'>, 'CLIENT_ID': '171657759516876', 'CLIENT_SECRET': '1ab56c84a1d338972c8786e49eaa7247', ...}"
+p217
+sS'files'
+p218
+S'[]'
+p219
+sS'title'
+p220
+S"'init'"
+p221
+sS'_caller'
+p222
+S'<function <lambda>>'
+p223
+sS'flash'
+p224
+S"'Logged in'"
+p225
+sS'session_id_name'
+p226
+S"'session_id_init'"
+p227
+sS'_custom_commit'
+p228
+S'None'
+p229
+sS'session_filename'
+p230
+S"'/home/zhe/codes/awesomequiz/web2py/applications/...ns/127-0-0-1-295a9fd8-3f59-4fd8-8579-4dfb8d4d9bd1'"
+p231
+sS'menu_edit'
+p232
+S"[[<lazyT 'Edit'>, False, <gluon.html.XML object>, [[<lazyT 'Controller'>, False, <gluon.html.XML object>], [<lazyT 'View'>, False, <gluon.html.XML object>], [<lazyT 'Layout'>, False, <gluon.html.XML object>], [<lazyT 'Stylesheet'>, False, <gluon.html.XML object>], [<lazyT 'DB Model'>, False, <gluon.html.XML object>], [<lazyT 'Menu Model'>, False, <gluon.html.XML object>], [<lazyT 'Database'>, False, <gluon.html.XML object>]]]]"
+p233
+sg59
+S'<cStringIO.StringO object>'
+p234
+sS'session_file'
+p235
+S"<open file '/home/zhe/codes/awesomequiz/web2py/a...95a9fd8-3f59-4fd8-8579-4dfb8d4d9bd1', mode 'rb+'>"
+p236
+sS'_custom_rollback'
+p237
+S'None'
+p238
+sS'session_id'
+p239
+S"'127-0-0-1-295a9fd8-3f59-4fd8-8579-4dfb8d4d9bd1'"
+p240
+sS'headers'
+p241
+S"<Storage {'Expires': 'Thu, 04 Nov 2010 20:57:25 ...he, must-revalidate, post-check=0, pre-check=0'}>"
+p242
+sS'status'
+p243
+S'200'
+p244
+sS'postprocessing'
+p245
+S'[]'
+p246
+sS'menu'
+p247
+S"[[<lazyT 'Index'>, False, <gluon.html.XML object>, []]]"
+p248
+sS'view'
+p249
+S"'post/index.html'"
+p250
+ssS'locals'
+p251
+(dp252
+S'graph'
+p253
+S'<facebook.GraphAPI object>'
+p254
+sS'user'
+p255
+S"<Storage {'username': '326200042', 'first_name':...assword': None, 'registration_key': '', 'id': 1}>"
+p256
+sssS'traceback'
+p257
+S'Traceback (most recent call last):\n  File "/home/zhe/codes/awesomequiz/web2py/gluon/restricted.py", line 188, in restricted\n    exec ccode in environment\n  File "/home/zhe/codes/awesomequiz/web2py/applications/init/controllers/post.py", line 16, in <module>\n  File "/home/zhe/codes/awesomequiz/web2py/gluon/globals.py", line 96, in <lambda>\n    self._caller = lambda f: f()\n  File "/home/zhe/codes/awesomequiz/web2py/gluon/tools.py", line 2270, in f\n    return action(*a, **b)\n  File "/home/zhe/codes/awesomequiz/web2py/applications/init/controllers/post.py", line 9, in index\n    graph.put_object(\'me\', \'feed\', \'This is so awesome!\')\nTypeError: put_object() takes exactly 3 arguments (4 given)\n'
+p258
+s.

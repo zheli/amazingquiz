@@ -1,0 +1,122 @@
+{{extend 'layout.html'}}
+<style>
+  #wizard_form {
+   padding-left:20px;
+  }
+  #wizard_form ul {
+  list-style: none;
+  }
+  #wizard_form li, #wizard_form tr, #wizard_form td {
+  padding: 2px;
+  border: 0px;
+  }
+  #wizard_form label {
+  font-weight: bold;
+  }
+  #wizard_form table {
+  border-spacing: 0px;
+  }
+  #wizard_form input[type=text] {
+  width: 300px;  
+  }
+  #wizard_nav {
+   width: 150px;
+   border-right: 1px dotted #E1E1E1;
+   padding-right: 20px;   
+  }
+  #no_table_description {
+  width:400px;
+  height:100px;
+  }
+  #no_table_content {
+  width:600px;
+  height:300px;
+  }
+
+</style>
+<table width="100%">
+  <tr>
+    <td id="wizard_nav">
+      {{if not request.function=='index':}}
+      <h2><a href="{{=URL('index')}}">Start over</a></h2>      
+      <ul>
+	<li><b>App Name:</b> {{=session.app['name']}}</li>
+      </ul>
+      <h2><a href="{{=URL('step1')}}">Current settings</a></h2>      
+      <ul>
+	{{for key,value in session.app['params'][:2]:}}
+	<li><b>{{=key}}:</b> {{=value}}</li>
+	{{pass}}
+	<li>...</li>
+      </ul>
+      <h2><a href="{{=URL('step2')}}">Tables</a></h2>
+      <ul>
+	{{for i,table in enumerate(session.app['tables']):}}
+	<li><a href="{{=URL('step3',args=i)}}">{{=table}}</a></li>
+	{{pass}}
+      </ul>
+      <h2><a href="{{=URL('step4')}}">Pages</a></h2>
+      <ul>
+	{{for i,page in enumerate(session.app['pages']):}}
+	<li><a href="{{=URL('step5',args=i)}}">{{=page}}</a></li>
+	{{pass}}
+      </ul>
+      <h2><a href="{{=URL('step6')}}">Generate</a></h2>
+      {{else:}}
+        <h2>Start a new app</h2>
+      {{pass}}
+    </td>
+    <td id="wizard_form">      
+      {{if 'step' in request.function:}}
+      <h2>Step {{=step}}</h2>
+      [<a href="{{=URL('step' + str(int(request.function[-1])-1))}}">back</a>]
+      {{else:}}
+      <h2>Begin</h2>
+      {{pass}}
+      {{if request.function in ('step1','step2','step3','step4','step5'):}}
+      [<a href="{{=URL('step6')}}">skip to generate</a>]
+      {{pass}}
+      <br /><br />
+      {{if request.function in ('step1','step6'):}}
+      <img src="{{=LAYOUTS_APP}}/static/plugin_layouts/layouts/{{=dict(session.app['params'])['layout_theme']}}/preview.png" alt="" align="right" id="preview"/>
+      {{pass}}
+      {{=form}}
+      <script>
+	jQuery(document).ready(function(){
+            var t=jQuery('#no_table_layout_theme');
+	    t.change(function(){
+               jQuery('#preview').attr('src','{{=LAYOUTS_APP}}/static/plugin_layouts/layouts/'+t.val()+'/preview.png');
+          });
+	});
+      </script>
+      <h2>Info</h2>
+      {{if request.function=='index':}}
+      Insert the name of a new app. If the app exists and was created with the wizard, you will be able to edit it, but any manual editing to the app <b>will be lost</b>.
+      {{elif request.function=='step1':}}
+      <ul>
+	<li>This Wizard will help you build a new web2py app.</li>	
+	<li>You can create an app with a name that already exists</li>
+	<li>If you do not have an email server set email server to <b>logging</b></li>
+	<li>If you want to use Janrain Engage for login: <ul><li><b>1)</b> Sign up for a <a href="http://www.janrain.com/products/engage">Janrain Engage</a> account </li>
+	                                          <li><b>2)</b> Register you hostname, domain, and obtain an api key </li>
+	                                          <li><b>3)</b> Set Login Config above to <b>domain:api_key</b></li>
+	                                      </ul></li>
+      </ul>
+      {{elif request.function=='step2':}}
+      List the names of table that you need. If you need authentication leave the table "auth_user" in the list. Press enter to create a new input row. Do not worry about empty rows. You will be able to add fields to your tables later. 
+      {{elif request.function=='step3':}}
+      List the fields for this table (do not include an id field, it is automatic). The first field will be used to represent records. You can use special attributes like "integer", "boolean", "float", "file", "date", "time", "datetime" to specify the fields type. You can also use "multiple", "notnull" and "unique" to add attributes. To create a reference just add the name of the table you want to reference. Again, press enter to create a new input row.
+      Table "auth_user" is a bit special and it must have a "username", "first_name", "last_name", "email" and "password". Do not add any attributes to these fields, they will be handled automatically.
+      {{elif request.function=='step4':}}
+      List the names of the pages you want to expose.
+      Some are here automatically because they expose Create/Read/Update/Delete for the tables you have created. If a page has a name starting in underscore it will not appear in menus. All the other pages will apper in menu in the order listed. You can change this later.
+      You should have page "index", the starting point of your app, and page "error", where web2py will redirect to in case of error.
+      {{elif request.function=='step5':}}
+      Use the markdown syntax to add text to your pages.
+      {{elif request.function=='step6':}}
+      Almost done. Click on the button above to create your new app.
+      Once done you will be able to edit it as any normal web2py app.
+      {{pass}}
+    </td>
+  </tr>
+</table>
