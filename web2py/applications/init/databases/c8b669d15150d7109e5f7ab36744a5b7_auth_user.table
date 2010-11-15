@@ -3,24 +3,32 @@ S'username'
 p2
 S'CHAR(128) UNIQUE'
 p3
-sS'first_name'
+sS'reset_password_key'
 p4
-S'CHAR(128)'
+S'CHAR(512)'
 p5
-sS'last_name'
+sS'first_name'
 p6
 S'CHAR(128)'
 p7
-sS'password'
+sS'last_name'
 p8
-S'CHAR(256)'
-p9
-sS'registration_key'
-p10
 S'CHAR(128)'
+p9
+sS'password'
+p10
+S'CHAR(256)'
 p11
-sS'id'
+sS'registration_key'
 p12
-S'INTEGER PRIMARY KEY AUTOINCREMENT'
+S'CHAR(128)'
 p13
+sS'id'
+p14
+S'INTEGER PRIMARY KEY AUTOINCREMENT'
+p15
+sS'email'
+p16
+S'CHAR(512)'
+p17
 s.

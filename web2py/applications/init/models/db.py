@@ -39,18 +39,6 @@ mail.settings.login = 'username:password'      # your credentials or None
 
 auth.settings.hmac_key = 'sha512:12660f29-c206-409f-8215-ed11cc55ccf2'   # before define_tables()
 # define the auth_table before call to auth.define_tables()
-auth_table = db.define_table(
-    auth.settings.table_user_name,
-    Field('first_name', length=128, default=""),
-    Field('last_name', length=128, default=""),
-    Field('username', length=128, default="", unique=True),
-    Field('password', 'password', length=256,
-          readable=False, label='Password'),
-    Field('registration_key', length=128, default= "",
-          writable=False, readable=False))
-
-auth_table.username.requires = IS_NOT_IN_DB(db, auth_table.username)
-
 auth.define_tables()                           # creates all needed tables
 auth.settings.mailer = mail                    # for user email verification
 auth.settings.registration_requires_verification = False
@@ -109,10 +97,9 @@ class FaceBookAccount(OAuthAccount):
                         username = user['id'])
 
 
-crud.settings.auth = None                      # =auth to enforce authorization on crud
-auth.settings.actions_disabled=['register','change_password','request_reset_password','profile']
-auth.settings.login_form=FaceBookAccount(globals())
-auth.settings.login_next=URL(f='index')
+#auth.settings.actions_disabled=['register','change_password','request_reset_password','profile']
+#auth.settings.login_form=FaceBookAccount(globals())
+auth.settings.login_next=URL(c='admin', f='index')
 #########################################################################
 ## Define your tables below (or better in another model file) for example
 ##
@@ -129,3 +116,8 @@ auth.settings.login_next=URL(f='index')
 ## >>> rows=db(db.mytable.myfield=='value').select(db.mytable.ALL)
 ## >>> for row in rows: print row.id, row.myfield
 #########################################################################
+db.define_table('characters',
+        Field('name', 'string'),
+        Field('pic', 'string'),
+        Field('answer', 'string'),
+        Field('description', 'text'))

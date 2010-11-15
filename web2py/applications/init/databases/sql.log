@@ -41,3 +41,16 @@ CREATE TABLE auth_event(
     description TEXT
 );
 success!
+timestamp: 2010-11-15T11:04:36.285712
+CREATE TABLE characters(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name CHAR(512),
+    pic CHAR(512),
+    answer CHAR(512),
+    description TEXT
+);
+success!
+timestamp: 2010-11-15T14:15:47.074387
+ALTER TABLE auth_user ADD reset_password_key CHAR(512);
+timestamp: 2010-11-15T14:15:47.118110
+ALTER TABLE auth_user ADD email CHAR(512);
