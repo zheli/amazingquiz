@@ -2,21 +2,23 @@
 
 @auth.requires_membership('admins')
 def index():
-    session.characters = db().select(db.characters.ALL, orderby=db.characters.id)
+    response.title = 'Admin Panel'
+    session.characters = db().select(db.characters.ALL, orderby=db.characters.answer)
     form = SQLFORM(db.characters)
     if form.accepts(request.vars, session):
-        session.characters = db().select(db.characters.ALL, orderby=db.characters.id)
+        session.characters = db().select(db.characters.ALL, orderby=db.characters.answer)
         response.flash = 'form accepted'
     elif form.errors:
         response.flash = 'form has errors'
     return dict(form=form)
 
 def modifyRecord():
-    session.characters = db().select(db.characters.ALL, orderby=db.characters.id)
+    response.title = 'Admin Panel'
+    session.characters = db().select(db.characters.ALL, orderby=db.characters.answer)
     record = db.characters(request.args(0)) or redirect(URL('index'))
     form = SQLFORM(db.characters, record, deletable=True)
     if form.accepts(request.vars, session):
-        session.characters = db().select(db.characters.ALL, orderby=db.characters.id)
+        session.characters = db().select(db.characters.ALL, orderby=db.characters.answer)
         response.flash = 'record updated!'
     elif form.errors:
         response.flash = 'errors!'
