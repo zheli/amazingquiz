@@ -1,5 +1,3 @@
-{{for character in rows:}}
-{{=DIV(B('You are %s.' % character['name']), BR(),
-IMG(_src=character['pic'], _height=320), BR(),
-P(character['description']))}}
-{{pass}}
+{{=DIV(B('You are %s.' % name), BR(),
+IMG(_src=pic, _height=320), BR(),
+P(description))}}

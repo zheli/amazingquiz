@@ -69,32 +69,30 @@ def update():
     #redirect('http://www.facebook.com/')
 
 def showResult():
-    from quiz_helpers import findMaxScore
-    score = {'a1': 0,
-            'a2' : 0,
-            'a3': 0,
-            'a4': 0,
-            'a5': 0,
-            'a6': 0,
-            'a7': 0,
-            'a8': 0,
-            'a9': 0,
-            'a10': 0,
-            'a11': 0,
-            }
-    for i in request.vars:
-        answer = request.vars[i]
-        if answer == 'a1':
-            score['a1']  = score['a1'] + 1
-        elif answer == 'a2':
-            score['a2']   = score['a2']  + 1
-        elif answer == 'a3':
-            score['a3']  = score['a3'] + 1
-        elif answer == 'a4':
-            score['a4']  = score['a4'] + 1
-    answer = findMaxScore(score)
-    rows = db(db.characters.answer == answer).select()
-    return dict(rows = rows)
+    from random import choice as randomChoice
+    #from quiz_helpers import findMaxScore
+    #score = {'a1': 0,
+    #        'a2' : 0,
+    #        'a3': 0,
+    #        'a4': 0,
+    #        }
+    #for i in request.vars:
+    #    answer = request.vars[i]
+    #    if answer == 'a1':
+    #        score['a1']  = score['a1'] + 1
+    #    elif answer == 'a2':
+    #        score['a2']   = score['a2']  + 1
+    #    elif answer == 'a3':
+    #        score['a3']  = score['a3'] + 1
+    #    elif answer == 'a4':
+    #        score['a4']  = score['a4'] + 1
+    #answer = findMaxScore(score)
+    #rows = db(db.characters.answer == answer).select()
+    allCharacters = db().select(db.characters.ALL)
+    randomResult = randomChoice(allCharacters)
+    return dict(name=randomResult['name'],
+            pic=randomResult['pic'],
+            description=randomResult['description'])
 
 def showRequest():
     return BEAUTIFY(request)
