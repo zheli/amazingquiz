@@ -93,10 +93,8 @@ def showResult():
         elif answer == 'a4':
             score['a4']  = score['a4'] + 1
     answer = findMaxScore(score)
-    character = db.characters(db.characters.answer == answer)
-    return DIV(B('You are %s.' % character['name']), BR(), 
-            IMG(_src=character['pic'], _height=320), BR(),
-            P(character['description']))
+    rows = db(db.characters.answer == answer).select()
+    return dict(rows = rows)
 
 def showRequest():
     return BEAUTIFY(request)

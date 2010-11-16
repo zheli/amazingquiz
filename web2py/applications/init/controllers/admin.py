@@ -22,8 +22,8 @@ def modifyRecord():
         response.flash = 'errors!'
     return dict(form=form)
 
-#@auth.requires_login()
-#def setup():
-#    admin_group_ID = auth.add_group('admins', 'the root!')
-#    auth.add_membership(admin_group_ID)
-#    return True
+@auth.requires_login()
+def setup():
+    admin_group_ID = auth.add_group('admins', 'the root!')
+    auth.add_membership(admin_group_ID)
+    return True
