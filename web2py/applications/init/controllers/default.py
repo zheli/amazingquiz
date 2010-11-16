@@ -25,6 +25,7 @@ def index():
             landing_url = landing_url)
 
 def quiz():
+    response.file = ['']
     return dict()
 
 def analyzer():
