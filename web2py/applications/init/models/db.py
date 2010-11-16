@@ -50,6 +50,14 @@ auth.messages.reset_password = 'Click on the link http://'+request.env.http_host
 
 crud.settings.auth = None                      # =auth to enforce authorization on crud
 auth.settings.login_next=URL(c='admin', f='index')
+
+import sys, os
+path = os.path.join(request.folder, 'modules')
+if not path in sys.path:
+    sys.path.append(path)
+
+from fbappauth import *
+
 #########################################################################
 ## Define your tables below (or better in another model file) for example
 ##

@@ -5,10 +5,10 @@
 ## - user is required for authentication and authorization
 ## - download is for downloading files uploaded in the db (does streaming)
 ## - call exposes all registered services (none by default)
-#########################################################################  
+#########################################################################
+
 from facebook import GraphAPI, GraphAPIError
 from fb_helpers import parse_signed_request
-from fbappauth import *
 
 def index():
     """
@@ -16,6 +16,7 @@ def index():
     rendered by views/default/index.html or views/generic.html
     """
     from urllib import urlencode, unquote_plus
+    local_import('fbappauth')
     landing_url = APP_URL+URL(c='default', f='quiz')
     query = dict(client_id = CLIENT_ID, scope=APP_SCOPE, 
             redirect_uri=landing_url)
@@ -69,41 +70,34 @@ def update():
 
 def showResult():
     from quiz_helpers import findMaxScore
-    characters = {'Peter':{
-                        'name': 'Peter',
-                        'pic':URL(c='static', f='pics/peter.jpg'),
-                        'description':'You get yourself into a lot of trouble due \
-                                to your slow and brain dead thinking. The stupid \
-                                things you do are usually totally on whim. You have \
-                                learned a couple things but you end up loosing those \
-                                things by next time. On the plus side, however, The \
-                                Fonz is your guiding spirit.'
-                        },
-                'Lois':{
-                    'name': 'Lois',
-                    'pic': URL(c='static', f='pics/lois.jpg'),
-                    'description':''
-                    }
-                }
-
-    score = {'Peter': 0,
-            'Lois' : 0,
-            'Brian': 0,
-            'Chris': 0}
+    score = {'a1': 0,
+            'a2' : 0,
+            'a3': 0,
+            'a4': 0,
+            'a5': 0,
+            'a6': 0,
+            'a7': 0,
+            'a8': 0,
+            'a9': 0,
+            'a10': 0,
+            'a11': 0,
+            }
     for i in request.vars:
         answer = request.vars[i]
         if answer == 'a1':
-            score['Peter']  = score['Peter'] + 1
+            score['a1']  = score['a1'] + 1
         elif answer == 'a2':
-            score['Lois']   = score['Lois']  + 1
+            score['a2']   = score['a2']  + 1
         elif answer == 'a3':
-            score['Brian']  = score['Brian'] + 1
+            score['a3']  = score['a3'] + 1
         elif answer == 'a4':
-            score['Stewie']  = score['Stewie'] + 1
-    character = characters[findMaxScore(score)]
-    return DIV(B('You are %s.' % character['name']), BR(), 
-            IMG(_src=character['pic'], _height=320), BR(),
-            P(character['description']))
+            score['a4']  = score['a4'] + 1
+    answer = findMaxScore(score)
+    character = db.characters(db.character.answer == answer)
+#    return DIV(B('You are %s.' % character['name']), BR(), 
+#            IMG(_src=character['pic'], _height=320), BR(),
+#            P(character['description']))
+    return character
 
 def showRequest():
     return BEAUTIFY(request)
