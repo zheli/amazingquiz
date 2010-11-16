@@ -28,6 +28,7 @@ else:                                         # else use a normal relational dat
 #########################################################################
 
 from gluon.tools import *
+migrate = True
 mail = Mail()                                  # mailer
 auth = Auth(globals(),db)                      # authentication/authorization
 crud = Crud(globals(),db)                      # for CRUD helpers using auth
@@ -48,57 +49,6 @@ auth.settings.reset_password_requires_verification = True
 auth.messages.reset_password = 'Click on the link http://'+request.env.http_host+URL(r=request,c='default',f='user',args=['reset_password'])+'/%(key)s to reset your password'
 
 crud.settings.auth = None                      # =auth to enforce authorization on crud
-
-################################################################################
-## use fb auth
-## for facebook "graphbook" application
-################################################################################
-
-
-import sys, os
-path = os.path.join(request.folder, 'modules')
-if not path in sys.path:
-    sys.path.append(path)
-from fbappauth import CLIENT_ID,CLIENT_SECRET
-from facebook import GraphAPI, GraphAPIError
-from gluon.contrib.login_methods.oauth20_account import OAuthAccount
-class FaceBookAccount(OAuthAccount):
-    """OAuth impl for FaceBook"""
-    AUTH_URL="https://graph.facebook.com/oauth/authorize"
-    TOKEN_URL="https://graph.facebook.com/oauth/access_token"
-
-    def __init__(self, g):
-        OAuthAccount.__init__(self, g, CLIENT_ID, CLIENT_SECRET,
-                              self.AUTH_URL, self.TOKEN_URL,
-                              scope='publish_stream,user_photos')
-        self.graph = None
-
-    def get_user(self):
-        '''Returns the user using the Graph API.
-        '''
-
-        if not self.accessToken():
-            return None
-        
-        if not self.graph:
-            self.graph = GraphAPI((self.accessToken()))
-
-        user = None
-        try:
-            user = self.graph.get_object("me")
-        except GraphAPIError, e:
-            self.session.token = None
-            self.graph = None
-
-
-        if user:
-            return dict(first_name = user['first_name'],
-                        last_name = user['last_name'],
-                        username = user['id'])
-
-
-#auth.settings.actions_disabled=['register','change_password','request_reset_password','profile']
-#auth.settings.login_form=FaceBookAccount(globals())
 auth.settings.login_next=URL(c='admin', f='index')
 #########################################################################
 ## Define your tables below (or better in another model file) for example
