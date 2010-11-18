@@ -2283,3 +2283,11 @@
 127.0.0.1, 2010-11-18 17:13:07, GET, /init/static/header.gif, HTTP/1.1, 304, 0.000511
 127.0.0.1, 2010-11-18 17:13:07, GET, /init/static/menu.gif, HTTP/1.1, 304, 0.000445
 127.0.0.1, 2010-11-18 17:13:07, GET, /favicon.ico, HTTP/1.1, 400, 0.000382
+127.0.0.1, 2010-11-18 17:15:39, GET, /init/default/quiz, HTTP/1.1, 200, 0.016352
+127.0.0.1, 2010-11-18 17:15:39, GET, /init/static/calendar.css, HTTP/1.1, 304, 0.001012
+127.0.0.1, 2010-11-18 17:15:39, GET, /init/static/calendar.js, HTTP/1.1, 304, 0.001642
+127.0.0.1, 2010-11-18 17:15:39, GET, /init/static/jquery.js, HTTP/1.1, 304, 0.000934
+127.0.0.1, 2010-11-18 17:15:39, GET, /init/static/ez-plug-min.css, HTTP/1.1, 304, 0.000885
+127.0.0.1, 2010-11-18 17:15:39, GET, /init/static/base.css, HTTP/1.1, 304, 0.000519
+127.0.0.1, 2010-11-18 17:15:39, GET, /init/static/header.gif, HTTP/1.1, 304, 0.000415
+127.0.0.1, 2010-11-18 17:15:40, GET, /favicon.ico, HTTP/1.1, 400, 0.000398
