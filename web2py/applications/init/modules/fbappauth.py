@@ -1,5 +1,6 @@
 FB_AUTH_URL = 'https://graph.facebook.com/oauth/authorize?'
 APP_SCOPE = 'user_photos,publish_stream'
+APP_TITLE = 'Amazing Quiz'
 APP_URL = 'http://apps.facebook.com/amazing_quiz'
 CLIENT_ID = '175543849124765'
 CLIENT_SECRET = '71c2c6004acb13b998e0b7aed3caafd3'

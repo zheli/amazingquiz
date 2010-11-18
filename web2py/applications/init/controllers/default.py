@@ -21,12 +21,14 @@ def index():
     query = dict(client_id = CLIENT_ID, scope=APP_SCOPE, 
             redirect_uri=landing_url)
     login_url=unquote_plus(FB_AUTH_URL + urlencode(query))
-    session.title = 'Amazing Quiz'
+    response.title = APP_TITLE
     return dict(client_id = CLIENT_ID, login_url = XML(login_url), 
             landing_url = landing_url)
 
 def quiz():
-    response.title = '%s - Which family guy character are you?' % session.title
+    response.title = APP_TITLE
+    response.subtitle = 'Which family guy characters are you?'
+    response.flash = 'Start quiz...'
     return dict()
 
 def analyzer():

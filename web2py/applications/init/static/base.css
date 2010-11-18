@@ -136,7 +136,7 @@ html {
     font-size: 10pt;
     font-family: Arial,Helvetica;
     color: #333333;
-    background: url('background.gif') repeat-x #3A3A3A;
+    /* background: url('background.gif') repeat-x #3A3A3A; */
 }
 
 a {
