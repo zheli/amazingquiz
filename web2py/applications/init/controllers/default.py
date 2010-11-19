@@ -28,7 +28,7 @@ def index():
 def quiz():
     response.title = APP_TITLE
     response.subtitle = 'Which family guy characters are you?'
-    response.flash = 'Start quiz...'
+    #response.flash = 'Start quiz...'
     return dict()
 
 def analyzer():

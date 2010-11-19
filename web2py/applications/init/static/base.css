@@ -85,6 +85,7 @@ h2 {
 h3 {
     padding-top: 0.3em;
     font-size: 1em;
+    color: #000000;
 }
 
 p {
@@ -141,7 +142,7 @@ html {
 }
 
 a {
-    color: #FF5C1F;
+     color: #3b5998;
 }
 
 div.flash {
@@ -211,7 +212,8 @@ div.error {
 }
 
 .header {
-    background: url('header.gif');
+    /* background: url('header.gif'); */
+    background:#edeff4 url(http://static.ak.fbcdn.net/rsrc.php/zb/r/3LyZkLVshsc.gif) repeat-x bottom left;
     color: white;
     border-bottom: 1px #99f solid;
 }
