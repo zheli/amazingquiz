@@ -215,7 +215,7 @@ div.error {
     /* background: url('header.gif'); */
     background:#edeff4 url(http://static.ak.fbcdn.net/rsrc.php/zb/r/3LyZkLVshsc.gif) repeat-x bottom left;
     color: white;
-    border-bottom: 1px #99f solid;
+    border-bottom: 1px #c0c0c0 solid;
 }
 
 .statusbar {
@@ -224,9 +224,9 @@ div.error {
 }
 
 .footer {
-    background: url('header.gif');
-    color: white;
-    border-top: 1px #99f solid;
+    /* background: url('header.gif');
+    color: white; */
+    border-top: 1px #c0c0c0 solid;
 }
 
 .column1 {
