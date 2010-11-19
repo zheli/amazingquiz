@@ -1,0 +1,4 @@
+cron:
+- description: ping website every 60 seconds
+  url: /init/default/quiz
+  schedule: every 1 minutes

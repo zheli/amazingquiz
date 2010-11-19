@@ -79,6 +79,7 @@ h1 {
 h2 {
     padding-top: 0.4em;
     font-size: 1.3em;
+    font-weight: bold;
 }
 
 h3 {
@@ -193,16 +194,15 @@ div.error {
 
 .wrapper {
     position: absolute;
-    top: 5px;
+    /* top: 5px;
     left: 5px;
-    /*
     padding-top: 20px;
     padding-left: 20px;
     */
 }
 
 .layout {
-    width: 95%;
+    width: 100%;
     padding: 0;
     /* border: 1px #99f solid; */
     border-spacing: 0;
