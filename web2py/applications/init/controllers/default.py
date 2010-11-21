@@ -16,7 +16,7 @@ def index():
     rendered by views/default/index.html or views/generic.html
     """
     from urllib import urlencode, unquote_plus
-    local_import('fbappauth')
+    #local_import('fbappauth')
     landing_url = APP_URL+URL(c='default', f='quiz')
     query = dict(client_id = CLIENT_ID, scope=APP_SCOPE, 
             redirect_uri=landing_url)
@@ -29,7 +29,7 @@ def quiz():
     response.title = APP_TITLE
     response.subtitle = 'Which family guy characters are you?'
     #response.flash = 'Start quiz...'
-    return dict()
+    return dict(client_id = CLIENT_ID)
 
 def analyzer():
     try:
