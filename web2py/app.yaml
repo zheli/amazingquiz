@@ -1,5 +1,5 @@
-application: web2py
-version: 1
+application: amazingceshi
+version: 2
 api_version: 1
 runtime: python
 
@@ -53,7 +53,3 @@ skip_files: |
  (applications/.*?/cache/.*)|
  (applications/.*?/sessions/.*)|
  )$
-
-builtins:
-- remote_api: on
-- datastore_admin: on
