@@ -1,4 +1,9 @@
 {{extend 'mylayout.html'}}
 {{=DIV(B('You are %s.' % name), BR(),
-IMG(_src=pic, _height=320), BR(),
-P(description))}}
+IMG(_src=pic, _height=200), BR(),
+P(description), _id='popup_info', _style='display:none;')}}
+<script>
+$(document).ready(function(){
+    $("#popup_info").bPopup();
+});
+</script>
