@@ -1,5 +1,8 @@
 #popup_info {
 background: #ffffff;
 width: 455px;
-padding: 15px;
+padding: 5px 10px 5px 10px;
+}
+#popup_info .popup_content{
+
 }
