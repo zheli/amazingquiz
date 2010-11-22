@@ -73,6 +73,8 @@ def update():
     #redirect('http://www.facebook.com/')
 
 def showResult():
+    response.title = APP_TITLE
+    response.subtitle = 'Result for %s' % 'Which family guy characters are you?'
     from random import choice as randomChoice
     #from quiz_helpers import findMaxScore
     #score = {'a1': 0,
@@ -94,7 +96,7 @@ def showResult():
     #rows = db(db.characters.answer == answer).select()
     allCharacters = db().select(db.characters.ALL)
     randomResult = randomChoice(allCharacters)
-    return dict(name=randomResult['name'],
+    return dict(client_id=CLIENT_ID, name=randomResult['name'],
             pic=randomResult['pic'],
             description=randomResult['description'])
 

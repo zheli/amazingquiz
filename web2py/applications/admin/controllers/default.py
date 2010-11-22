@@ -1,10 +1,11 @@
 # coding: utf8 
 
 from gluon.admin import *
+from gluon.fileutils import abspath
 from glob import glob
 import shutil
 
-if DEMO_MODE and request.function in ['change_password','pack','pack_plugin','upgrade_web2py','uninstall','cleanup','compile_app','remove_compiled_app','delete','delete_plugin','create_file','upload_file','errors','update_languages']:
+if DEMO_MODE and request.function in ['change_password','pack','pack_plugin','upgrade_web2py','uninstall','cleanup','compile_app','remove_compiled_app','delete','delete_plugin','create_file','upload_file','update_languages']:
     session.flash = T('disabled in demo mode')
     redirect(URL('site'))
 
@@ -23,9 +24,11 @@ def index():
     """ Index handler """
 
     send = request.vars.send
+    if DEMO_MODE:
+        session.authorized = True
+        session.last_time = t0
     if not send:
         send = URL('site')
-
     if session.authorized:
         redirect(send)
     elif request.vars.password:
@@ -45,12 +48,8 @@ def index():
         else:
             response.flash = T('invalid password')
             
-    if DEMO_MODE:
-        response.flash = T('Demo mode: any random passoword will get you in')
-
     # f == file
     apps = [f for f in os.listdir(apath(r=request)) if f.find('.') < 0]
-
     return dict(apps=apps, send=send)
 
 
@@ -66,8 +65,8 @@ def check_version():
     if new_version == -1:
         return A(T('Unable to check for upgrades'), _href=WEB2PY_URL)
     elif new_version == True:
-        return A(T('A new version of web2py is available: %s'
-                                            % version_number), _href=WEB2PY_URL)
+        return sp_button(URL('upgrade_web2py'), T('upgrade now')) \
+          + XML(' <strong class="upgrade_version">%s</strong>' % version_number)
     else:
         return A(T('web2py is up to date'), _href=WEB2PY_URL)
 
@@ -93,7 +92,7 @@ def change_password():
         elif form.vars.new_admin_password != form.vars.new_admin_password_again:
             form.errors.new_admin_password_again = T('no match')
         else:
-            path = os.path.join(request.env.applications_path,'parameters_%s.py' % request.env.server_port)
+            path = abspath('parameters_%s.py' % request.env.server_port)
             safe_open(path,'w').write('password="%s"' % CRYPT()(request.vars.new_admin_password)[0])
             session.flash = T('password changed')
             redirect(URL('site'))
@@ -309,6 +308,20 @@ def test():
 def keepalive():
     return ''
 
+def search():
+    keywords=request.vars.keywords or ''
+    def match(filename,keywords):
+        filename=os.path.join(apath(request.args[0], r=request),filename)
+        if keywords in open(filename,'rb').read():
+            return True
+        return False
+    path=apath(request.args[0], r=request)
+    files1 = glob(os.path.join(path,'*/*.py'))
+    files2 = glob(os.path.join(path,'*/*.html'))
+    files3 = glob(os.path.join(path,'*/*/*.html'))
+    files=[x[len(path)+1:].replace('\\','/') for x in files1+files2+files3 if match(x,keywords)]
+    return response.json({'files':files})
+
 def edit():
     """ File edit handler """
     # Load json only if it is ajax edited...
@@ -320,12 +333,14 @@ def edit():
         filetype = 'python'
     elif filename[-5:] == '.html':
         filetype = 'html'
+    elif filename[-5:] == '.load':
+        filetype = 'html'
     elif filename[-4:] == '.css':
         filetype = 'css'
     elif filename[-3:] == '.js':
         filetype = 'js'
     else:
-        filetype = 'text'
+        filetype = 'html'
 
     # ## check if file is not there
 
@@ -418,13 +433,13 @@ def edit():
     edit_controller = None
     editviewlinks = None
     view_link = None
-    if filetype == 'html' and request.args >= 3:
+    if filetype == 'html' and len(request.args) >= 3:
         cfilename = os.path.join(request.args[0], 'controllers',
                                  request.args[2] + '.py')
         if os.path.exists(apath(cfilename, r=request)):
             edit_controller = URL('edit', args=[cfilename])
             view = request.args[3].replace('.html','')
-            view_link = A(T('view'),_href=URL(request.args[0],request.args[2],view))
+            view_link = URL(request.args[0],request.args[2],view)
     elif filetype == 'python' and request.args[1] == 'controllers':
         ## it's a controller file.
         ## Create links to all of the associated view files.
@@ -598,7 +613,7 @@ def about():
     about = safe_open(apath('%s/ABOUT' % app, r=request), 'r').read()
     license = safe_open(apath('%s/LICENSE' % app, r=request), 'r').read()
 
-    return dict(app=app, about=WIKI(about), license=WIKI(license))
+    return dict(app=app, about=MARKMIN(about), license=MARKMIN(license))
 
 
 def design():
@@ -1128,5 +1143,5 @@ def twitter():
         page = gluon.tools.fetch('http://twitter.com/web2py?format=json')
         return sj.loads(page)['#timeline']
     except Exception, e:
-        return DIV(T('Unable to download because'),PRE(str(e)))
+        return DIV(T('Unable to download because:'),BR(),str(e))
 

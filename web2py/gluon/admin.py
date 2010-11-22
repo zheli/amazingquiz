@@ -168,6 +168,12 @@ def app_create(app, request,force=False,key=None):
             return False
     try:
         w2p_unpack('welcome.w2p', path)
+        for subfolder in ['models','views','controllers', 'databases',
+                          'modules','cron','errors','sessions',
+                          'languages','static','private','uploads']:
+            subpath =  os.path.join(path,subfolder)
+            if not os.path.exists(subpath):
+                os.mkdir(subpath)
         db = os.path.join(path, 'models', 'db.py')
         if os.path.exists(db):
             fp = open(db,'r')
@@ -419,12 +425,13 @@ def upgrade(request, url='http://web2py.com'):
 
     full_url = url + '/examples/static/web2py_%s.zip' % version_type
     filename = abspath('web2py_%s_downloaded.zip' % version_type)
+    file = None
     try:
         file = open(filename,'wb')
         file.write(urllib.urlopen(full_url).read())
         file.close()
     except Exception,e:
-        file.close()
+        file and file.close()
         return False, e
     try:
         unzip(filename, destination, subfolder)

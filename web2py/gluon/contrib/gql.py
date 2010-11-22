@@ -29,6 +29,8 @@ from google.appengine.api.datastore_types import Key
 from google.appengine.ext.db.polymodel import PolyModel
 MAX_ITEMS = 1000 # GAE main limitation
 
+DEFAULT = gluon.sql.DEFAULT
+
 Row = gluon.sql.Row
 Rows = gluon.sql.Rows
 Reference = gluon.sql.Reference
@@ -209,7 +211,7 @@ class Table(gluon.sql.Table):
             field._tablename = self._tablename
             field._table = self
             field._db = self._db
-            if field.requires == '<default>':
+            if field.requires == DEFAULT:
                 field.requires = gluon.sql.sqlhtml_validators(field)
         self.ALL = SQLALL(self)
 
@@ -321,7 +323,11 @@ class Expression(object):
 
     def __or__(self, other):  # for use in sortby
         assert_filter_fields(self, other)
-        return Expression(self.name if self.type!='id' else '__key__' + '|' + other.name if other.type!='id' else '__key__', None, None)
+        def ks(obj):
+            if obj.type == 'id':
+                return '-__key__' if obj.name.startswith('-') else '__key__'
+            return obj.name
+        return Expression(ks(self)+'|'+ks(other),None,None)
 
     def __invert__(self):
         assert_filter_fields(self)
@@ -402,9 +408,9 @@ class Field(Expression, gluon.sql.Field):
         fieldname,
         type='string',
         length=None,
-        default=None,
+        default=DEFAULT,
         required=False,
-        requires='<default>',
+        requires=DEFAULT,
         ondelete='CASCADE',
         notnull=False,
         unique=False,
@@ -431,7 +437,10 @@ class Field(Expression, gluon.sql.Field):
             length = 512
         self.type = type  # 'string', 'integer'
         self.length = length  # the length of the string
-        self.default = default  # default value for field
+        if default==DEFAULT:
+            self.default = update or None
+        else:
+            self.default = default
         self.required = required  # is this field required
         self.ondelete = ondelete.upper()  # this is for reference fields only
         self.notnull = notnull
@@ -766,7 +775,7 @@ class Set(gluon.sql.Set):
         try:
             return len(items)
         except TypeError:
-            return items.count()
+            return items.count(limit=None)
 
     def count(self):
         (items, tablename, fields) = self._select()

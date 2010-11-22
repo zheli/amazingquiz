@@ -13,14 +13,14 @@ def reset(session):
                   ('author_email','you@example.com'),
                   ('keywords',''),
                   ('description',''),
+                  ('layout_theme','Default'),
                   ('database_uri','sqlite://storage.sqlite'),
                   ('security_key',str(uuid.uuid4())),
                   ('email_server','localhost'),
                   ('email_sender','you@example.com'),
                   ('email_login',''),                  
                   ('login_method','local'),
-                  ('login_config',''),
-                  ('layout_theme','Default')],
+                  ('login_config','')],
         'tables':['auth_user'],
         'table_auth_user':['username','first_name','last_name','email','password'],
         'pages':['index','error'],
@@ -58,7 +58,7 @@ def index():
     return dict(step='Start',form=form)
                          
 
-def step1():    
+def step1():
     from gluon.contrib.simplejson import loads
     import urllib
     if not session.themes:
@@ -80,6 +80,8 @@ def step1():
                 Field('keywords',default=params.get('keywords',None)),
                 Field('description','text',
                       default=params.get('description',None)),
+                Field('layout_theme',requires=IS_IN_SET(themes),
+                      default=params.get('layout_theme',themes[0])),
                 Field('database_uri',default=params.get('database_uri',None)),
                 Field('security_key',default=params.get('security_key',None)),
                 Field('email_server',default=params.get('email_server',None)),
@@ -87,9 +89,8 @@ def step1():
                 Field('email_login',default=params.get('email_login',None)),
                 Field('login_method',requires=IS_IN_SET(('local','janrain')),
                       default=params.get('login_method','local')),
-                Field('login_config',default=params.get('login_config',None)),
-                Field('layout_theme',requires=IS_IN_SET(themes),
-                      default=params.get('layout_theme',themes[0])))
+                Field('login_config',default=params.get('login_config',None)))
+                
     if form.accepts(request.vars):
         session.app['params']=[(key,form.vars.get(key,None)) 
                                for key,value in session.app['params']]
@@ -136,10 +137,15 @@ def step3():
         session.app['table_'+table]=[t.strip().lower()
                                        for t in listify(form.vars.field_names)
                                        if t.strip()]
-        if n<m-1:
-            redirect(URL('step3',args=n+1))
+        try:
+            tables=sort_tables(session.app['tables'])
+        except RuntimeError:
+            response.flash=T('invalid circual reference')
         else:
-            redirect(URL('step4'))
+            if n<m-1:
+                redirect(URL('step3',args=n+1))
+            else:
+                redirect(URL('step4'))
     return dict(step='3: Fields for table "%s" (%s of %s)' % (table,n+1,m),table=table,form=form)
 
 def step4():
@@ -188,23 +194,36 @@ def step6():
         Field('erase_database','boolean',default=True),
         Field('populate_database','boolean',default=True))
     if form.accepts(request.vars):
+        if DEMO_MODE:
+            session.flash = T('Application cannot be generated in demo mode')
+            redirect(URL('index'))
         create(form.vars)       
-        links = [
-            A(T('click to open'),_href=URL(app,'default','index'),
-              _target='_blank'),            
-            A(T('design'),_href=URL('admin','default','design',args=app),
-              _target='_blank'),
-            A(T('manage'),_href=URL(app,'appadmin','index'),
-              _target='_blank')
-            ]
-        if have_mercurial:
-            links.append(
-                A(T('commit (mercurial)'),
-                  _href=URL('admin','mercurial','commit',args=app),
-                  _target='_blank'))
-        form = TABLE(*links)
-        response.flash = 'Application %s created' % app
+        session.flash = 'Application %s created' % app
+        redirect(URL('generated'))
     return dict(step='6: Generate app "%s"' % app,form=form)
+
+def generated():
+    return dict(app=session.app['name'])
+
+def sort_tables(tables):
+    import re
+    regex = re.compile('(%s)' % '|'.join(tables))
+    is_auth_user = 'auth_user' in tables
+    d={}
+    for table in tables:
+        d[table]=[]
+        for field in session.app['table_%s' % table]:
+            d[table]+=regex.findall(field)
+    tables=[]
+    if is_auth_user:
+        tables.append('auth_user')
+    def append(table,trail=[]):
+        if table in trail: 
+            raise RuntimeError
+        for t in d[table]: append(t,trail=trail+[table])
+        if not table in tables: tables.append(table)
+    for table in d: append(table)
+    return tables
 
 def make_table(table,fields):
     rawtable=table
@@ -289,15 +308,18 @@ def make_table(table,fields):
         ### make up a label
         s+=",\n          label=T('%s')),\n" % \
             ' '.join(x.capitalize() for x in barename.split('_'))
-    s+="    Field('f_created_on','datetime',default=request.now,\n"
+    if table!='auth_user':
+        s+="    Field('active','boolean',default=True,\n"
+        s+="          label=T('Active'),writable=False,readable=False),\n"
+    s+="    Field('created_on','datetime',default=request.now,\n"
     s+="          label=T('Created On'),writable=False,readable=False),\n"
-    s+="    Field('f_modified_on','datetime',default=request.now,\n"
+    s+="    Field('modified_on','datetime',default=request.now,\n"
     s+="          label=T('Modified On'),writable=False,readable=False,\n"
     s+="          update=request.now),\n"
     if not table=='auth_user' and 'auth_user' in session.app['tables']:
-        s+="    Field('f_created_by',db.auth_user,default=auth.user_id,\n"
+        s+="    Field('created_by',db.auth_user,default=auth.user_id,\n"
         s+="          label=T('Created By'),writable=False,readable=False),\n"
-        s+="    Field('f_modified_by',db.auth_user,default=auth.user_id,\n"
+        s+="    Field('modified_by',db.auth_user,default=auth.user_id,\n"
         s+="          label=T('Modified By'),writable=False,readable=False,\n"
         s+="          update=auth.user_id),\n"
     elif table=='auth_user':
@@ -319,6 +341,8 @@ db.auth_user.registration_id.requires = IS_NOT_IN_DB(db, db.auth_user.registrati
 db.auth_user.email.requires = (IS_EMAIL(error_message=auth.messages.invalid_email),
                                IS_NOT_IN_DB(db, db.auth_user.email))
 """
+    else:
+        s+="db.define_table('%s_archive',db.%s,Field('current_record','reference %s'))\n" % (table,table,table)
     return s
 
 
@@ -367,10 +391,10 @@ response.menu = [
     return s
 
 def make_page(page,contents):
-    if page in ('index','error'):
-        s="def %s():\n" % page
-    else:
+    if 'auth_user' in session.app['tables'] and not page in ('index','error'):
         s="@auth.requires_login()\ndef %s():\n" % page
+    else:
+        s="def %s():\n" % page
     items=page.rsplit('_',1)
     if items[0] in session.app['tables'] and len(items)==2:
         t=items[0]
@@ -379,19 +403,22 @@ def make_page(page,contents):
             s+="    form=crud.read(db.t_%s,record)\n" % t
             s+="    return dict(form=form)\n\n"
         elif items[1]=='update':
-            s+="    record = db.t_%s(request.args(0)) or redirect(URL('error'))\n" % t
-            s+="    form=crud.update(db.t_%s,record,next='%s_read/[id]')\n" % (t,t)
+            s+="    record = db.t_%s(request.args(0),active=True) or redirect(URL('error'))\n" % t
+            s+="    form=crud.update(db.t_%s,record,next='%s_read/[id]',\n"  % (t,t)
+            s+="                     ondelete=lambda form: redirect(URL('%s_select')),\n" % t
+            s+="                     onaccept=crud.archive)\n"
             s+="    return dict(form=form)\n\n"
         elif items[1]=='create':
             s+="    form=crud.create(db.t_%s,next='%s_read/[id]')\n" % (t,t)
             s+="    return dict(form=form)\n\n"
         elif items[1]=='select':
             s+="    f,v=request.args(0),request.args(1)\n"
-            s+="    query=f and db.t_%s[f]==v or db.t_%s\n" % (t,t)
-            s+="    rows=db(query).select()\n"
+            s+="    try: query=f and db.t_%s[f]==v or db.t_%s\n" % (t,t)
+            s+="    except: redirect(URL('error'))\n"
+            s+="    rows=db(query)(db.t_%s.active==True).select()\n" % t
             s+="    return dict(rows=rows)\n\n"
         elif items[1]=='search':
-            s+="    form, rows=crud.search(db.t_%s)\n" % t
+            s+="    form, rows=crud.search(db.t_%s,query=db.t_%s.active==True)\n" % (t,t)
             s+="    return dict(form=form, rows=rows)\n\n"
         else:
             t=None
@@ -410,9 +437,9 @@ def make_view(page,contents):
         if items[1]=='read':
             s+="\n{{=A(T('edit %s'),_href=URL('%s_update',args=request.args(0)))}}\n<br/>\n"%(t,t)
             s+='\n{{=form}}\n'            
-            s+='{{for t,f in db.t_%s._referenced_by:}}' % t
+            s+="{{for t,f in db.t_%s._referenced_by:}}{{if not t[-8:]=='_archive':}}" % t        
             s+="[{{=A(t[2:],_href=URL('%s_select'%t[2:],args=(f,form.record.id)))}}]"
-            s+='{{pass}}'
+            s+='{{pass}}{{pass}}'
         elif items[1]=='create':
             s+="\n{{=A(T('select %s'),_href=URL('%s_select'))}}\n<br/>\n"%(t,t)
             s+='\n{{=form}}\n'
@@ -497,15 +524,16 @@ def create(options):
         model = os.path.join(request.folder,'..',app,'models','db_wizard.py')
         file = open(model,'wb')
         file.write('### we prepend t_ to tablenames and f_ to fieldnames for disambiguity\n\n')
-        for table in session.app['tables']:
+        tables=sort_tables(session.app['tables'])
+        for table in tables:
             if table=='auth_user': continue
             file.write(make_table(table,session.app['table_'+table]))
         file.close()
 
+    model = os.path.join(request.folder,'..',app,
+                         'models','db_wizard_populate.py')
+    if os.path.exists(model): os.unlink(model)
     if options.populate_database:        
-        model = os.path.join(request.folder,'..',app,
-                             'models','db_wizard_populate.py')
-        if os.path.exists(model): os.unlink(model)
         file = open(model,'wb')
         file.write(populate(session.app['tables']))
         file.close()

@@ -217,7 +217,7 @@ class IS_LENGTH(Validator):
         ('1234567890', 'enter from 20 to 50 characters')
     """
 
-    def __init__(self, maxsize=255, minsize=0, error_message='enter from %(min)s to %(max)s characters'):
+    def __init__(self, maxsize=255, minsize=0, error_message='enter from %(min)g to %(max)g characters'):
         self.maxsize = maxsize
         self.minsize = minsize
         self.error_message = error_message % dict(min=minsize, max=maxsize)
@@ -327,7 +327,10 @@ class IS_IN_SET(Validator):
             if self.multiple and (value == None or value == ''):
                 return ([], None)
             return (value, self.error_message)
-        if self.multiple:
+        if self.multiple:            
+            if isinstance(self.multiple,(tuple,list)) and \
+                    not self.multiple[0]<=len(values)<self.multiple[1]:
+                return (values, self.error_message)
             return (values, None)
         return (value, None)
 
@@ -434,6 +437,9 @@ class IS_IN_DB(Validator):
                 values = [value]
             else:
                 values = []
+            if isinstance(self.multiple,(tuple,list)) and \
+                    not self.multiple[0]<=len(values)<self.multiple[1]:
+                return (values, self.error_message)
             if not [x for x in values if not x in self.theset]:
                 return (values, None)
         elif self.theset:
@@ -553,18 +559,18 @@ class IS_INT_IN_RANGE(Validator):
             else:
                 self.maximum = int(maximum)
                 if error_message is None:
-                    error_message = 'enter an integer less than or equal to %(max)s'
+                    error_message = 'enter an integer less than or equal to %(max)g'
                 self.error_message = error_message % dict(max=self.maximum-1)
         elif maximum is None:
             self.minimum = int(minimum)
             if error_message is None:
-                error_message = 'enter an integer greater than or equal to %(min)s'
+                error_message = 'enter an integer greater than or equal to %(min)g'
             self.error_message = error_message % dict(min=self.minimum)
         else:
             self.minimum = int(minimum)
             self.maximum = int(maximum)
             if error_message is None:
-                error_message = 'enter an integer between %(min)s and %(max)s'
+                error_message = 'enter an integer between %(min)g and %(max)g'
             self.error_message = error_message % dict(min=self.minimum, max=self.maximum-1)
 
     def __call__(self, value):
@@ -606,7 +612,7 @@ class IS_FLOAT_IN_RANGE(Validator):
         >>> IS_FLOAT_IN_RANGE(1,5)(1)
         (1.0, None)
         >>> IS_FLOAT_IN_RANGE(1,5)(5.1)
-        (5.0999999999999996, 'enter a number between 1.0 and 5.0')
+        (5.1, 'enter a number between 1.0 and 5.0')
         >>> IS_FLOAT_IN_RANGE(1,5)(6.0)
         (6.0, 'enter a number between 1.0 and 5.0')
         >>> IS_FLOAT_IN_RANGE(1,5)(3.5)
@@ -641,16 +647,16 @@ class IS_FLOAT_IN_RANGE(Validator):
             else:
                 self.maximum = float(maximum)
                 if error_message is None:
-                    error_message = 'enter a number less than or equal to %(max)s'
+                    error_message = 'enter a number less than or equal to %(max)g'
         elif maximum is None:
             self.minimum = float(minimum)
             if error_message is None:
-                error_message = 'enter a number greater than or equal to %(min)s'
+                error_message = 'enter a number greater than or equal to %(min)g'
         else:
             self.minimum = float(minimum)
             self.maximum = float(maximum)
             if error_message is None:
-                error_message = 'enter a number between %(min)s and %(max)s'
+                error_message = 'enter a number between %(min)g and %(max)g'
         self.error_message = error_message % dict(min=self.minimum, max=self.maximum)
 
     def __call__(self, value):
@@ -692,35 +698,41 @@ class IS_DECIMAL_IN_RANGE(Validator):
         INPUT(_type='text', _name='name', requires=IS_DECIMAL_IN_RANGE(0, 10))
 
         >>> IS_DECIMAL_IN_RANGE(1,5)('4')
-        ('4', None)
+        (Decimal('4'), None)
         >>> IS_DECIMAL_IN_RANGE(1,5)(4)
-        (4, None)
+        (Decimal('4'), None)
         >>> IS_DECIMAL_IN_RANGE(1,5)(1)
-        (1, None)
+        (Decimal('1'), None)
         >>> IS_DECIMAL_IN_RANGE(1,5)(5.1)
-        (5.0999999999999996, 'enter a number between 1 and 5')
+        (5.1, 'enter a number between 1 and 5')
         >>> IS_DECIMAL_IN_RANGE(5.1,6)(5.1)
-        (5.0999999999999996, None)
+        (Decimal('5.1'), None)
         >>> IS_DECIMAL_IN_RANGE(5.1,6)('5.1')
-        ('5.1', None)
+        (Decimal('5.1'), None)
         >>> IS_DECIMAL_IN_RANGE(1,5)(6.0)
         (6.0, 'enter a number between 1 and 5')
         >>> IS_DECIMAL_IN_RANGE(1,5)(3.5)
-        (3.5, None)
+        (Decimal('3.5'), None)
         >>> IS_DECIMAL_IN_RANGE(1.5,5.5)(3.5)
-        (3.5, None)
+        (Decimal('3.5'), None)
         >>> IS_DECIMAL_IN_RANGE(1.5,5.5)(6.5)
         (6.5, 'enter a number between 1.5 and 5.5')
         >>> IS_DECIMAL_IN_RANGE(1.5,None)(6.5)
-        (6.5, None)
+        (Decimal('6.5'), None)
         >>> IS_DECIMAL_IN_RANGE(1.5,None)(0.5)
         (0.5, 'enter a number greater than or equal to 1.5')
         >>> IS_DECIMAL_IN_RANGE(None,5.5)(4.5)
-        (4.5, None)
+        (Decimal('4.5'), None)
         >>> IS_DECIMAL_IN_RANGE(None,5.5)(6.5)
         (6.5, 'enter a number less than or equal to 5.5')
         >>> IS_DECIMAL_IN_RANGE()(6.5)
-        (6.5, None)
+        (Decimal('6.5'), None)
+        >>> IS_DECIMAL_IN_RANGE(0,99)(123.123)
+        (123.123, 'enter a number between 0 and 99')
+        >>> IS_DECIMAL_IN_RANGE(0,99)('123.123')
+        ('123.123', 'enter a number between 0 and 99')
+        >>> IS_DECIMAL_IN_RANGE(0,99)('12.34')
+        (Decimal('12.34'), None)
         >>> IS_DECIMAL_IN_RANGE()('abc')
         ('abc', 'enter a decimal number')
     """
@@ -741,16 +753,16 @@ class IS_DECIMAL_IN_RANGE(Validator):
             else:
                 self.maximum = decimal.Decimal(str(maximum))
                 if error_message is None:
-                    error_message = 'enter a number less than or equal to %(max)s'
+                    error_message = 'enter a number less than or equal to %(max)g'
         elif maximum is None:
             self.minimum = decimal.Decimal(str(minimum))
             if error_message is None:
-                error_message = 'enter a number greater than or equal to %(min)s'
+                error_message = 'enter a number greater than or equal to %(min)g'
         else:
             self.minimum = decimal.Decimal(str(minimum))
             self.maximum = decimal.Decimal(str(maximum))
             if error_message is None:
-                error_message = 'enter a number between %(min)s and %(max)s'
+                error_message = 'enter a number between %(min)g and %(max)g'
         self.error_message = error_message % dict(min=self.minimum, max=self.maximum)
 
     def __call__(self, value):

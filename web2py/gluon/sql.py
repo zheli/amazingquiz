@@ -514,8 +514,10 @@ def sqlhtml_validators(field):
             field_type.find('.') < 0 and \
             field_type[15:] in field._db.tables:
         referenced = field._db[field_type[15:]]
-        field.represent = lambda ids, r=referenced, f=ff: \
-            (ids and ', '.join(f(r,id) for id in ids) or '')
+        def list_ref_repr(ids, r=referenced, f=ff):
+            refs = r._db(r.id.belongs(ids)).select(r.id)
+            return (ids and ', '.join(f(r,ref.id) for ref in refs) or '')
+        field.represent = list_ref_repr     
         if hasattr(referenced, '_format') and referenced._format:
             requires = validators.IS_IN_DB(field._db,referenced.id,
                                            referenced._format,multiple=True)
@@ -903,7 +905,14 @@ class SQLDB(dict):
 
     def __init__(self, uri='sqlite://dummy.db', pool_size=0,
                  folder=None, db_codec='UTF-8', check_reserved=None,
-                 migrate=True, fake_migrate=False):
+                 migrate=True, fake_migrate=False,
+                 decode_credentials=False):
+        if not decode_credentials:
+            credential_decoder = lambda cred: cred
+        else:
+            import urllib
+            credential_decoder = lambda cred: urllib.unquote(cred)
+
         self._uri = str(uri) # NOTE: assuming it is in utf8!!!
         self._pool_size = pool_size
         self._db_codec = db_codec
@@ -961,10 +970,10 @@ class SQLDB(dict):
             if not m:
                 raise SyntaxError, \
                     "Invalid URI string in SQLDB: %s" % self._uri
-            user = m.group('user')
+            user = credential_decoder(m.group('user'))
             if not user:
                 raise SyntaxError, 'User required'
-            passwd = m.group('passwd')
+            passwd = credential_decoder(m.group('passwd'))
             if not passwd:
                 passwd = ''
             host = m.group('host')
@@ -996,10 +1005,10 @@ class SQLDB(dict):
                            ).match(self._uri[11:])
             if not m:
                 raise SyntaxError, "Invalid URI string in SQLDB"
-            user = m.group('user')
+            user = credential_decoder(m.group('user'))
             if not user:
                 raise SyntaxError, 'User required'
-            passwd = m.group('passwd')
+            passwd = credential_decoder(m.group('passwd'))
             if not passwd:
                 passwd = ''
             host = m.group('host')
@@ -1071,10 +1080,10 @@ class SQLDB(dict):
                 if not m:
                     raise SyntaxError, \
                         "Invalid URI string in SQLDB: %s" % self._uri
-                user = m.group('user')
+                user = credential_decoder(m.group('user'))
                 if not user:
                     raise SyntaxError, 'User required'
-                passwd = m.group('passwd')
+                passwd = credential_decoder(m.group('passwd'))
                 if not passwd:
                     passwd = ''
                 host = m.group('host')
@@ -1112,10 +1121,10 @@ class SQLDB(dict):
             if not m:
                 raise SyntaxError, \
                     "Invalid URI string in SQLDB: %s" % self._uri
-            user = m.group('user')
+            user = credential_decoder(m.group('user'))
             if not user:
                 raise SyntaxError, 'User required'
-            passwd = m.group('passwd')
+            passwd = credential_decoder(m.group('passwd'))
             if not passwd:
                 passwd = ''
             host = m.group('host')
@@ -1141,10 +1150,10 @@ class SQLDB(dict):
             if not m:
                 raise SyntaxError, \
                     "Invalid URI string in SQLDB: %s" % self._uri
-            user = m.group('user')
+            user = credential_decoder(m.group('user'))
             if not user:
                 raise SyntaxError, 'User required'
-            passwd = m.group('passwd')
+            passwd = credential_decoder(m.group('passwd'))
             if not passwd:
                 passwd = ''
             pathdb = m.group('path')
@@ -1169,10 +1178,10 @@ class SQLDB(dict):
             if not m:
                 raise SyntaxError, \
                     "Invalid URI string in SQLDB: %s" % self._uri
-            user = m.group('user')
+            user = credential_decoder(m.group('user'))
             if not user:
                 raise SyntaxError, 'User required'
-            passwd = m.group('passwd')
+            passwd = credential_decoder(m.group('passwd'))
             if not passwd:
                 passwd = ''
             host = m.group('host')
@@ -1209,10 +1218,10 @@ class SQLDB(dict):
                            ).match(self._uri[11:])
             if not m:
                 raise SyntaxError, "Invalid URI string in SQLDB"
-            user = m.group('user')
+            user = credential_decoder(m.group('user'))
             if not user:
                 raise SyntaxError, 'User required'
-            passwd = m.group('passwd')
+            passwd = credential_decoder(m.group('passwd'))
             if not passwd:
                 passwd = ''
             host = m.group('host')
@@ -1627,7 +1636,7 @@ class Table(dict):
             field._tablename = self._tablename
             field._table = self
             field._db = self._db
-            if field.requires == '<default>':
+            if field.requires == DEFAULT:
                 field.requires = sqlhtml_validators(field)
         self.ALL = SQLALL(self)
 
@@ -2268,7 +2277,7 @@ class KeyedTable(Table):
             field._tablename = self._tablename
             field._table = self
             field._db = self._db
-            if field.requires == '<default>':
+            if field.requires == DEFAULT:
                 field.requires = sqlhtml_validators(field)
         self.ALL = SQLALL(self)
 
@@ -2618,6 +2627,12 @@ class Expression(object):
         else:
             raise RuntimeError, "startswith used with incompatible field type"
 
+    def endswith(self, value):
+       if self.type in ('string', 'text'):
+           return Query(self, ' LIKE ', '%%%s' % value)
+       else:
+           raise RuntimeError, "endswith used with incompatible field type"
+
     def contains(self, value):
         if self.type in ('string', 'text'):
             return Query(self, ' LIKE ', '%%%s%%' % value)
@@ -2762,9 +2777,9 @@ class Field(Expression):
         fieldname,
         type='string',
         length=None,
-        default=None,
+        default=DEFAULT,
         required=False,
-        requires='<default>',
+        requires=DEFAULT,
         ondelete='CASCADE',
         notnull=False,
         unique=False,
@@ -2792,7 +2807,10 @@ class Field(Expression):
             length = 512
         self.type = type  # 'string', 'integer'
         self.length = length # the length of the string
-        self.default = default==None and update or default
+        if default==DEFAULT:
+            self.default = update or None 
+        else:
+            self.default = default
         self.required = required  # is this field required
         self.ondelete = ondelete.upper()  # this is for reference fields only
         self.notnull = notnull
@@ -3407,7 +3425,11 @@ excluded + tables_to_merge.keys()])
         rowsobj = Rows(db, new_rows, colnames, rawrows=rows)
         for table, virtualfields in virtualtables:
             for item in virtualfields:
-                rowsobj = rowsobj.setvirtualfields(**{table:item})
+                try:
+                    rowsobj = rowsobj.setvirtualfields(**{table:item})
+                except KeyError: 
+                    # to avoid breaking virtualfields when partial select
+                    pass
         return rowsobj
 
     def _count(self):
@@ -4028,7 +4050,9 @@ def DAL(uri='sqlite:memory:',
         folder=None,
         db_codec='UTF-8',
         check_reserved=None,
-        migrate=True, fake_migrate=False):
+        migrate=True,
+        fake_migrate=False,
+        decode_credentials=False):
     if uri == 'gae':
         import contrib.gql
         return contrib.gql.GQLDB()
@@ -4039,7 +4063,8 @@ def DAL(uri='sqlite:memory:',
                 try:
                     return SQLDB(uri, pool_size=pool_size, folder=folder,
                                  db_codec=db_codec, check_reserved=check_reserved,
-                                 migrate=migrate, fake_migrate=fake_migrate)
+                                 migrate=migrate, fake_migrate=fake_migrate,
+                                 decode_credentials=decode_credentials)
                 except SyntaxError, exception:
                     raise SyntaxError, exception
                 except Exception, exception:

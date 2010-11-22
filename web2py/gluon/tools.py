@@ -328,8 +328,8 @@ class Mail(object):
         elif isinstance(message, (list, tuple)):
             text, html = message
         elif message.strip().startswith('<html') and message.strip().endswith('</html>'):
-            text=None
-            html=message
+            text = self.settings.server=='gae' and message or None
+            html = message
         else:
             text = message
             html = None
@@ -599,6 +599,7 @@ class Recaptcha(DIV):
         use_ssl=False,
         error=None,
         error_message='invalid',
+        label = 'Verify:'
         ):
         self.remote_addr = request.env.remote_addr
         self.public_key = public_key
@@ -609,7 +610,7 @@ class Recaptcha(DIV):
         self.error_message = error_message
         self.components = []
         self.attributes = {}
-        self.label = 'Verify:'
+        self.label = label
         self.comment = ''
 
     def _validate(self):
@@ -1078,7 +1079,8 @@ class Auth(object):
             if not 'register' in self.settings.actions_disabled:
                 bar.insert(2, ' | ')
                 bar.insert(3, register)
-            if 'username' in self.settings.table_user.fields():
+            if 'username' in self.settings.table_user.fields() and \
+                    not 'retrieve_username' in self.settings.actions_disabled:
                 bar.insert(-1, ' | ')
                 bar.insert(-1, retrieve_username)
             if not 'request_reset_password' in self.settings.actions_disabled:
@@ -1417,7 +1419,7 @@ class Auth(object):
                     if temp_user.registration_key == 'pending':
                         response.flash = self.messages.registration_pending
                         return form
-                    elif temp_user.registration_key == 'disabled':
+                    elif temp_user.registration_key in ('disabled','blocked'):
                         response.flash = self.messages.login_disabled
                         return form
                     elif temp_user.registration_key!=None and temp_user.registration_key.strip():
@@ -1841,7 +1843,7 @@ class Auth(object):
                 self.environment.session.flash = \
                     self.messages.invalid_email
                 redirect(self.url(args=request.args))
-            elif user.registration_key in ['pending', 'disabled']:
+            elif user.registration_key in ('pending','disabled','blocked'):
                 self.environment.session.flash = \
                     self.messages.registration_pending
                 redirect(self.url(args=request.args))
@@ -1983,7 +1985,7 @@ class Auth(object):
             if not user:
                 session.flash = self.messages.invalid_email
                 redirect(self.url(args=request.args))
-            elif user.registration_key in ['pending', 'disabled']:
+            elif user.registration_key in ('pending','disabled','blocked'):
                 session.flash = self.messages.registration_pending
                 redirect(self.url(args=request.args))
             reset_password_key = str(int(time.time()))+'-' + web2py_uuid()
@@ -2173,7 +2175,7 @@ class Auth(object):
                                        self.settings.table_user_name,
                                        user_id):
                 raise HTTP(403, "Forbidden")
-            user = self.settings.table_user[request.args[1]]
+            user = self.settings.table_user(user_id)
             if not user:
                 raise HTTP(401, "Not Authorized")
             auth.impersonator = cPickle.dumps(session)
@@ -2431,7 +2433,11 @@ class Auth(object):
         if not user_id and self.user:
             user_id = self.user.id
         membership = self.settings.table_membership
-        id = membership.insert(group_id=group_id, user_id=user_id)
+        record = membership(user_id = user_id,group_id = group_id)
+        if record:
+            return record.id
+        else:
+            id = membership.insert(group_id=group_id, user_id=user_id)
         log = self.messages.add_membership_log
         if log:
             self.log_event(log % dict(user_id=user_id,
@@ -2515,7 +2521,7 @@ class Auth(object):
                                record_id=long(record_id))
         log = self.messages.add_permission_log
         if log:
-            self.log_event(log % dict(permission_id, group_id=group_id,
+            self.log_event(log % dict(permission_id=id, group_id=group_id,
                            name=name, table_name=table_name,
                            record_id=record_id))
         return id
@@ -3453,6 +3459,10 @@ class Service:
             return response.json(s)
         self.error()
 
+    class JsonRpcException:
+        def __init__(self,code,info):
+            self.code,self.info = code,info
+
     def serve_jsonrpc(self):
         import contrib.simplejson as simplejson
         def return_response(id, result):
@@ -3477,6 +3487,8 @@ class Service:
             if hasattr(s, 'as_list'):
                 s = s.as_list()
             return return_response(id, s)
+        except Service.JsonRpcException, e:
+            return return_error(id, e.code, e.info)
         except BaseException:
             etype, eval, etb = sys.exc_info()
             return return_error(id, 100, '%s: %s' % (etype.__name__, eval))

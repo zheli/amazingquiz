@@ -29,6 +29,7 @@ import cStringIO
 
 
 table_field = re.compile('[\w_]+\.[\w_]+')
+widget_class = re.compile('^\w*')
 
 def safe_int(x):    
     try:
@@ -59,7 +60,7 @@ class FormWidget(object):
         """
         attr = dict(
             _id = '%s_%s' % (field._tablename, field.name),
-            _class = isinstance(field.type,str) and field.type or None,
+            _class = widget_class.match(str(field.type)).group(),
             _name = field.name,
             requires = field.requires,
             )
@@ -110,6 +111,11 @@ class IntegerWidget(StringWidget):
 
 
 class DoubleWidget(StringWidget):
+
+    pass
+
+
+class DecimalWidget(StringWidget):
 
     pass
 
@@ -386,6 +392,7 @@ class UploadWidget(FormWidget):
     DEFAULT_WIDTH = '150px'
     ID_DELETE_SUFFIX = '__delete'
     GENERIC_DESCRIPTION = 'file'
+    DELETE_FILE = 'delete'
 
     @staticmethod
     def widget(field, value, download_url=None, **attributes):
@@ -418,7 +425,7 @@ class UploadWidget(FormWidget):
                       A(UploadWidget.GENERIC_DESCRIPTION, _href = url), '|',
                       INPUT(_type='checkbox',
                             _name=field.name + UploadWidget.ID_DELETE_SUFFIX),
-                      'delete]', br, image)
+                      '%s]' % UploadWidget.DELETE_FILE, br, image)
         return inp
 
     @staticmethod
@@ -531,6 +538,8 @@ class AutocompleteWidget:
                 dict(url=self.url,min_length=self.min_length,
                      key=self.keyword,id=attr['_id'],key2=key2,key3=key3,
                      name=name,div_id=div_id,u='F'+self.keyword)
+            if self.min_length==0:
+                attr['_onfocus'] = attr['_onkeyup']
             return TAG[''](INPUT(**attr),INPUT(_type='hidden',_id=key3,_value=value,
                                                _name=name,requires=field.requires),
                            DIV(_id=div_id,_style='position:absolute;'))
@@ -541,6 +550,8 @@ class AutocompleteWidget:
             attr['_onkeyup'] = "var e=event.which?event.which:event.keyCode; function %(u)s(){jQuery('#%(id)s').val(jQuery('#%(key)s').val())}; if(e==39) %(u)s(); else if(e==40) {if(jQuery('#%(key)s option:selected').next().length)jQuery('#%(key)s option:selected').attr('selected',null).next().attr('selected','selected'); %(u)s();} else if(e==38) {if(jQuery('#%(key)s option:selected').prev().length)jQuery('#%(key)s option:selected').attr('selected',null).prev().attr('selected','selected'); %(u)s();} else if(jQuery('#%(id)s').val().length>=%(min_length)s) jQuery.get('%(url)s?%(key)s='+escape(jQuery('#%(id)s').val()),function(data){jQuery('#%(id)s').next('.error').hide();jQuery('#%(div_id)s').html(data).show().focus();jQuery('#%(div_id)s select').css('width',jQuery('#%(id)s').css('width'));jQuery('#%(key)s').change(%(u)s);jQuery('#%(key)s').click(%(u)s);}); else jQuery('#%(div_id)s').fadeOut('slow');" % \
                 dict(url=self.url,min_length=self.min_length,
                      key=self.keyword,id=attr['_id'],div_id=div_id,u='F'+self.keyword)
+            if self.min_length==0:
+                attr['_onfocus'] = attr['_onkeyup']
             return TAG[''](INPUT(**attr),DIV(_id=div_id,_style='position:absolute;'))
 
 
@@ -599,6 +610,7 @@ class SQLFORM(FORM):
         password = PasswordWidget,
         integer = IntegerWidget,
         double = DoubleWidget,
+        decimal = DecimalWidget,
         time = TimeWidget,
         date = DateWidget,
         datetime = DatetimeWidget,
@@ -1017,7 +1029,8 @@ class SQLFORM(FORM):
             for fieldname in self.fields:
                 field = self.table[fieldname]
                 ### this is a workaround! widgets should always have default not None!
-                if not field.widget and field.type.startswith('list:'):
+                if not field.widget and field.type.startswith('list:') and \
+                        not OptionsWidget.has_options(field):
                     field.widget = self.widgets.list.widget
                 if hasattr(field, 'widget') and field.widget and fieldname in request_vars:
                     if fieldname in self.vars:
@@ -1102,7 +1115,7 @@ class SQLFORM(FORM):
             elif field.default == None and field.type!='blob':
                 self.errors[fieldname] = 'no data'
                 return False
-            value = fields[fieldname]
+            value = fields.get(fieldname,None)
             if field.type == 'list:string':
                 if not isinstance(value,(tuple,list)):
                     fields[fieldname] = value and [value] or []
@@ -1259,7 +1272,10 @@ class SQLTABLE(TABLE):
                     row.append(TD(r))
                     continue
                 (tablename, fieldname) = colname.split('.')
-                field = sqlrows.db[tablename][fieldname]
+                try:
+                    field = sqlrows.db[tablename][fieldname]
+                except KeyError:
+                    field = None
                 if tablename in record \
                         and isinstance(record,Row) \
                         and isinstance(record[tablename],Row):
@@ -1269,22 +1285,8 @@ class SQLTABLE(TABLE):
                 else:
                     raise SyntaxError, 'something wrong in Rows object'
                 r_old = r
-                if field.represent:
-                    r = field.represent(r)
-                elif field.type == 'blob' and r:
-                    r = 'DATA'
-                elif field.type == 'upload':
-                    if upload and r:
-                        r = A('file', _href='%s/%s' % (upload, r))
-                    elif r:
-                        r = 'file'
-                    else:
-                        r = ''
-                elif field.type in ['string','text']:
-                    r = str(field.formatter(r))
-                    ur = unicode(r, 'utf8')
-                    if truncate!=None and len(ur) > truncate:
-                        r = ur[:truncate - 3].encode('utf8') + '...'
+                if not field:
+                    pass
                 elif linkto and field.type == 'id':
                     try:
                         href = linkto(r, 'table', tablename)
@@ -1311,6 +1313,22 @@ class SQLTABLE(TABLE):
                                  (k, record[tablename][k])) or (k, record[k]) \
                                     for k in field._table._primarykey ] ))
                     r = A(r, _href='%s/%s?%s' % (linkto, tablename, key))
+                elif field.represent:
+                    r = field.represent(r)
+                elif field.type == 'blob' and r:
+                    r = 'DATA'
+                elif field.type == 'upload':
+                    if upload and r:
+                        r = A('file', _href='%s/%s' % (upload, r))
+                    elif r:
+                        r = 'file'
+                    else:
+                        r = ''
+                elif field.type in ['string','text']:
+                    r = str(field.formatter(r))
+                    ur = unicode(r, 'utf8')
+                    if truncate!=None and len(ur) > truncate:
+                        r = ur[:truncate - 3].encode('utf8') + '...'
                 row.append(TD(r))
             tbody.append(TR(_class=_class, *row))
         components.append(TBODY(*tbody))

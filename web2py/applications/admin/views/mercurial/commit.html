@@ -1,17 +1,15 @@
 {{extend 'layout.html'}}
 {{import time}}
 
-<h1>Mercurial Version Control System Interface<br />
+<h2>Mercurial Version Control System Interface<br />
 for application "{{=request.args[0]}}"</h2>
 
-<h2>Commit form</h2>
+<h3>Commit form</h3>
 {{=form}}
 
 
 {{if repo['.'].rev()>=0:}}
-
-<br/><br/>
-<h2>Last Revision</h2>
+<h3>Last Revision</h3>
 <table>
 <tr><td>Revision:</td><td>{{=repo['.'].rev()}}</td></tr>
 <tr><td>Node:</td><td>{{=repo['.']}}</td></tr>
@@ -20,15 +18,16 @@ for application "{{=request.args[0]}}"</h2>
 <tr><td>Description:</td><td>{{=repo['.'].description()}}</td></tr>
 </table>
 
-<br/><br/>
-
-<h2>Past revisions</h2>
-{{=changes}}
+<h3>Past revisions</h3>
+<div class="changes">
+  {{=changes}}
+</div>
 
 {{if files:}}
-<br/><br/>
-<h2>Committed files</h2>
+<h3>Committed files</h3>
+<div class="files">
 {{=files}}
+</div>
 {{pass}}
 
 {{pass}}

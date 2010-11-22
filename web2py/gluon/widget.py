@@ -87,11 +87,9 @@ def try_start_browser(url):
 
 def start_browser(ip, port):
     """ Starts the default browser """
-
     print 'please visit:'
     print '\thttp://%s:%s' % (ip, port)
-    print 'starting browser...in 5 seconds'
-    time.sleep(5)
+    print 'starting browser...'
     try_start_browser('http://%s:%s' % (ip, port))
 
 
@@ -103,7 +101,7 @@ def presentation(root):
     dx = root.winfo_screenwidth()
     dy = root.winfo_screenheight()
 
-    dialog = Tkinter.Toplevel(root)
+    dialog = Tkinter.Toplevel(root, bg='white')
     dialog.geometry('%ix%i+%i+%i' % (500, 300, dx / 2 - 200, dy / 2 - 150))
 
     dialog.overrideredirect(1)
@@ -116,42 +114,33 @@ def presentation(root):
     canvas.pack()
     root.update()
 
-    for counter in xrange(5):
-        if counter is 0:
-            canvas.create_text(250,
-                               50,
-                               text='Welcome to ...',
-                               font=('Helvetica', 12),
-                               anchor=Tkinter.CENTER,
-                               fill='#195866')
-        elif counter is 1:
-            canvas.create_text(250,
-                               130,
-                               text=ProgramName,
-                               font=('Helvetica', 18),
-                               anchor=Tkinter.CENTER,
-                               fill='#FF5C1F')
-        elif counter is 2:
-            canvas.create_text(250,
-                               170,
-                               text=ProgramAuthor,
-                               font=('Helvetica', 12),
-                               anchor=Tkinter.CENTER,
-                               fill='#195866')
-        elif counter is 3:
-            canvas.create_text(250,
-                               250,
-                               text=ProgramVersion,
-                               font=('Helvetica', 12),
-                               anchor=Tkinter.CENTER,
-                               fill='#195866')
-        else:
-            dialog.destroy()
-            return
+    img = Tkinter.PhotoImage(file='splashlogo.gif')
+    pnl = Tkinter.Label(canvas, image=img, background='white', bd=0)
+    pnl.pack(side='top', fill='both', expand='yes')
+    # Prevent garbage collection of img
+    pnl.image=img
 
-        root.update()
-        time.sleep(1.5)
-    return root
+    def add_label(text='Change Me', font_size=12, foreground='#195866', height=1):
+        return Tkinter.Label(
+            master=canvas,
+            width=250,
+            height=height,
+            text=text,
+            font=('Helvetica', font_size),
+            anchor=Tkinter.CENTER,
+            foreground=foreground,
+            background='white'
+            )
+
+    add_label('Welcome to...').pack(side='top')
+    add_label(ProgramName, 18, '#FF5C1F', 2).pack()
+    add_label(ProgramAuthor).pack()
+    add_label(ProgramVersion).pack()
+
+    root.update()
+    time.sleep(5)
+    dialog.destroy()
+    return
 
 
 class web2pyDialog(object):
@@ -644,6 +633,13 @@ def console():
                       default=False,
                       help='do not start cron automatically')
 
+    parser.add_option('-J',
+                      '--cronjob',
+                      action='store_true',
+                      dest='cronjob',
+                      default=False,
+                      help='identify cron-initiated command')
+
     parser.add_option('-L',
                       '--config',
                       dest='config',
@@ -683,7 +679,7 @@ def console():
                       dest='interfaces',
                       default=None,
                       help=msg)
-    
+
     if '-A' in sys.argv: k = sys.argv.index('-A')
     elif '--args' in sys.argv: k = sys.argv.index('--args')
     else: k=len(sys.argv)
@@ -701,6 +697,11 @@ def console():
     if options.config[-3:] == '.py':
         options.config = options.config[:-3]
 
+    if options.cronjob:
+        global_settings.cronjob = True  # tell the world
+        options.nocron = True   # don't start cron jobs
+        options.plain = True    # cronjobs use a plain shell
+
     options.folder = os.path.abspath(options.folder)
 
     for path in ('applications', 'deposit', 'site-packages', 'logs'):
@@ -709,20 +710,21 @@ def console():
 
     sys.path.append(os.path.join(options.folder,'site-packages'))
 
-    # If we have the applications package or if we should upgrade
-    if not os.path.exists('applications/__init__.py'):
-        fp = open('applications/__init__.py', 'w')
-        fp.write('')
-        fp.close()
+    if not options.cronjob:
+        # If we have the applications package or if we should upgrade
+        if not os.path.exists('applications/__init__.py'):
+            fp = open('applications/__init__.py', 'w')
+            fp.write('')
+            fp.close()
 
-    if not os.path.exists('welcome.w2p') or os.path.exists('NEWINSTALL'):
-        w2p_pack('welcome.w2p','applications/welcome')
-        os.unlink('NEWINSTALL')
+        if not os.path.exists('welcome.w2p') or os.path.exists('NEWINSTALL'):
+            w2p_pack('welcome.w2p','applications/welcome')
+            os.unlink('NEWINSTALL')
 
     return (options, args)
 
 
-def start(cron = True):
+def start(cron=True):
     """ Start server  """
 
     # ## get command line arguments
