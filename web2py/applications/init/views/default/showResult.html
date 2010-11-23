@@ -4,10 +4,10 @@ IMG(_src=pic, _height=200), BR(),
 P(description), _id='quiz_result')}}
 
 {{=DIV(
-DIV(H2('Quiz Result'), _class='popup_title'),
+H2('Quiz Result', _class='popup_title'),
 DIV(B('You are %s.' % name), BR(),
 IMG(_src=pic, _height=200), BR(),P(description), _class='popup_content'),
-DIV(INPUT(_value='Close', _type='button', _class='bClose'), _id='popup_control'), 
+DIV(LABEL(INPUT(_value='Close', _type='button', _class='bClose'), _class='popup_control_button'), _class='popup_control'), 
 _id='popup_info', _style='display:none;'
 )}}
 <script>
