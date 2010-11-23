@@ -8,6 +8,19 @@ width: 450px;
 }
 #popup_info label input{
 cursor:pointer;
+color: white;
+background: none;
+font-family: 'Lucida Grande', Tahoma, Verdana, Arial, sans-serif;
+font-size: 1em;
+font-weight: bold;
+border: 0px outset buttonface;
+display: inline-block;
+margin: 0px;
+padding: 1px 0px 2px;
+text-align: center;
+text-indent: 0px;
+text-shadow: none;
+white-space: nowrap;
 }
 #popup_info .popup_content {
 padding: 5px 10px;
@@ -28,4 +41,13 @@ border-top: 1px solid #ccc;
 background-color: #f2f2f2;
 padding: 6px 10px;
 text-align: right;
+}
+#popup_info .popup_control label {
+background-position: 0px -48px;
+background-image: url('pics/button.png');
+border-color: #29447e #29447e #1a356e;
+border-style: solid;
+border-width: 1px;
+display: inline-block;
+line-height: normal !important;
 }
