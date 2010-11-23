@@ -83,6 +83,7 @@ auth.settings.registration_requires_approval = False
 auth.messages.verify_email = 'Click on the link http://'+request.env.http_host+URL(r=request,c='default',f='user',args=['verify_email'])+'/%(key)s to verify your email'
 auth.settings.reset_password_requires_verification = True
 auth.messages.reset_password = 'Click on the link http://'+request.env.http_host+URL(r=request,c='default',f='user',args=['reset_password'])+'/%(key)s to reset your password'
+auth.settings.login_next=URL(c='admin', f='index')
 
 #########################################################################
 ## If you need to use OpenID, Facebook, MySpace, Twitter, Linkedin, etc.
@@ -93,6 +94,12 @@ auth.messages.reset_password = 'Click on the link http://'+request.env.http_host
 #    url = "http://localhost:8000/%s/default/user/login" % request.application)
 ## other login methods are in gluon/contrib/login_methods
 #########################################################################
+
+import sys, os
+path = os.path.join(request.folder, 'modules')
+if not path in sys.path:
+    sys.path.append(path)
+from fbappauth import *
 
 crud.settings.auth = None                      # =auth to enforce authorization on crud
 
@@ -116,3 +123,9 @@ crud.settings.auth = None                      # =auth to enforce authorization 
 mail.settings.server = settings.email_server
 mail.settings.sender = settings.email_sender
 mail.settings.login = settings.email_login
+
+db.define_table('characters',
+        Field('name', 'string'),
+        Field('pic', 'string'),
+        Field('answer', 'string'),
+        Field('description', 'text'))

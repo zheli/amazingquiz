@@ -46,3 +46,12 @@ CREATE TABLE auth_event(
     description TEXT
 );
 success!
+timestamp: 2010-11-23T14:50:52.137131
+CREATE TABLE characters(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name CHAR(512),
+    pic CHAR(512),
+    answer CHAR(512),
+    description TEXT
+);
+success!
