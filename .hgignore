@@ -1,3 +1,5 @@
 syntax: glob
 *.pyc
 127*
+*.swp
+*.bak
