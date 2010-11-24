@@ -23,6 +23,8 @@ text-shadow: none;
 white-space: nowrap;
 }
 #popup_info .popup_content {
+font-family: Verdana;
+font-size: 1em;
 padding: 5px 10px;
 }
 #popup_info .popup_title {
