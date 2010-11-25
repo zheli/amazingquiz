@@ -8,7 +8,8 @@
 #########################################################################
 
 from facebook import GraphAPI, GraphAPIError
-from fb_helpers import parse_signed_request
+#from fb_helpers import parse_signed_request, signed_request_getTokenWithID
+import fb_helpers
 
 def index():
     """
@@ -26,6 +27,11 @@ def index():
             landing_url = landing_url)
 
 def quiz():
+    if request.vars['signed_request']:
+        if not updateUserInfo(request.vars['signed_request']):
+           return JSredirect()
+    else:
+        return JSredirect()
     response.title = APP_TITLE
     response.subtitle = 'Which family guy characters are you?'
     #response.flash = 'Start quiz...'
@@ -138,4 +144,13 @@ def call():
     session.forget()
     return service()
 
+def updateUserInfo(signed_request):
+    from fb_helpers import signed_request_getTokenWithID
+    session.oauth_token, session.user_id = signed_request_getTokenWithID(signed_request, CLIENT_SECRET)
+    if db(db.fb_users.fb_uid == session.user_id).update(fb_token = session.oauth_token):
+        return True
+    else:
+        if db.fb_users.insert(fb_uid = session.user_id, fb_token = session.oauth_token):
+            return True
 
+    return False

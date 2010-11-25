@@ -33,3 +33,7 @@ def parse_signed_request(signed_request, secret):
     else:
         #print('valid signed request received..')
         return data
+
+def signed_request_getTokenWithID(signed_request, secret):
+    data = parse_signed_request(signed_request, secret)
+    return data['oauth_token'], data['user_id']

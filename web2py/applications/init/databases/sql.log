@@ -54,3 +54,25 @@ timestamp: 2010-11-15T14:15:47.074387
 ALTER TABLE auth_user ADD reset_password_key CHAR(512);
 timestamp: 2010-11-15T14:15:47.118110
 ALTER TABLE auth_user ADD email CHAR(512);
+timestamp: 2010-11-25T11:01:31.501481
+CREATE TABLE users(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    uid CHAR(25),
+    character_id INTEGER REFERENCES characters(id) ON DELETE CASCADE
+);
+success!
+timestamp: 2010-11-25T11:02:09.234898
+ALTER TABLE users ADD facebook_id CHAR(25);
+timestamp: 2010-11-25T11:02:52.806278
+CREATE TABLE fb_users(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    uid CHAR(25),
+    character_id INTEGER REFERENCES characters(id) ON DELETE CASCADE
+);
+success!
+timestamp: 2010-11-25T11:03:09.341970
+ALTER TABLE fb_users ADD fb_id CHAR(25);
+timestamp: 2010-11-25T11:07:32.028418
+ALTER TABLE fb_users ADD fb_uid CHAR(30);
+timestamp: 2010-11-25T13:03:37.688866
+ALTER TABLE fb_users ADD fb_token CHAR(512);
