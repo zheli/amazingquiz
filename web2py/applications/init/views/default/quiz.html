@@ -1,4 +1,7 @@
 {{extend 'mylayout.html'}}
+{{if character:}}
+{{=B('You already did it, %s' % character['name'])}}
+{{pass}}
         <form name="quiz" action="{{=URL(f='showResult')}}" method="post">
             <ol>
                 <li><p>You are thirsty and want a drink, what will you do?</p>

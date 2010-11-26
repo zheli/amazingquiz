@@ -7,6 +7,8 @@
 ## - call exposes all registered services (none by default)
 #########################################################################
 
+# TODO: finish getFacebookAuth()
+
 from facebook import GraphAPI, GraphAPIError
 #from fb_helpers import parse_signed_request, signed_request_getTokenWithID
 import fb_helpers
@@ -16,6 +18,7 @@ def index():
     example action using the internationalization operator T and flash
     rendered by views/default/index.html or views/generic.html
     """
+    session.forget()
     from urllib import urlencode, unquote_plus
     #local_import('fbappauth')
     landing_url = APP_URL+URL(c='default', f='quiz')
@@ -27,15 +30,22 @@ def index():
             landing_url = landing_url)
 
 def quiz():
-    if request.vars['signed_request']:
-        if not updateUserInfo(request.vars['signed_request']):
-           return JSredirect()
-    else:
-        return JSredirect()
+    userScore = None
+    try:
+        if request.vars['signed_request']:
+            if not updateUserInfo(request.vars['signed_request']):
+                return getFacebookAuth()
+            else:
+                userScore = getUserScore()
+    except:
+        return getFacebookAuth()
     response.title = APP_TITLE
     response.subtitle = 'Which family guy characters are you?'
-    #response.flash = 'Start quiz...'
-    return dict(client_id = CLIENT_ID)
+    if userScore:
+        character = db.characters[userScore]
+    else:
+        character = None
+    return dict(character=character, client_id = CLIENT_ID)
 
 def analyzer():
     try:
@@ -154,3 +164,10 @@ def updateUserInfo(signed_request):
             return True
 
     return False
+
+def getUserScore():
+    userRecord = db(db.fb_users.fb_uid == session.user_id).select()
+    if not userRecord[0].character_id:
+        return None
+    else:
+        return userRecord[0].character_id

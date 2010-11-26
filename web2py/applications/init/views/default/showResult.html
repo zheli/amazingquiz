@@ -1,8 +1,11 @@
+{{response.files.insert(4, 'https://ajax.googleapis.com/ajax/libs/mootools/1.3.0/mootools-yui-compressed.js')}}
+{{response.files.insert(5, URL(request.application,'static','jquery.bpopup-0.4.1.min.js'))}}
+{{response.files.insert(6, URL(request.application,'static','lightface/LightFace.js'))}}
+{{response.files.insert(7, URL(request.application,'static','lightface/LightFace.css'))}}
 {{extend 'mylayout.html'}}
 {{=DIV(B('You are %s.' % name), BR(),
 IMG(_src=pic, _height=200), BR(),
 P(description), _id='quiz_result')}}
-
 {{=DIV(
 H2('Quiz Result', _class='popup_title'),
 DIV(
@@ -13,7 +16,28 @@ DIV(LABEL(INPUT(_value='Close', _type='button', _class='bClose'), _class='popup_
 _id='popup_info', _style='display:none;'
 )}}
 <script>
-$(document).ready(function(){
-    $("#popup_info").bPopup({fadeSpeed: 50, modalClose: false});
-});
+    function PublishResultFunction() {
+        box = new LightFace({
+            title: 'Quiz Result',
+            width: 400,
+            height: 100,
+            content: "This is just a test",
+            buttons:[
+                {
+                    title: 'Publish',
+                    event: function() {this.close();},
+                    color: 'blue',
+                },
+                {
+                    title: 'Skip',
+                    event: function() {this.close();},
+                }
+            ]
+        });
+        box.open();
+    }
+    $(document).ready(function(){
+/*        $("#popup_info").bPopup({fadeSpeed: 50, modalClose: false}); */
+        PublishResultFunction();
+    });
 </script>

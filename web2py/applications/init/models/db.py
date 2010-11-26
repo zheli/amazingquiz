@@ -86,7 +86,7 @@ db.define_table('fb_users',
 #        Field('character_id', 'string'))
 
 db.fb_users.fb_uid.requires = IS_NOT_EMPTY()
-#db.fb_users.character_id.requires = IS_IN_DB(db, db.characters.id, '%(name)s')
+db.fb_users.character_id.requires = IS_IN_DB(db, db.characters.id, '%(name)s')
 db.fb_users.character_id.writable = db.fb_users.character_id.readable = False
 db.fb_users.fb_token.requires = IS_NOT_EMPTY()
 db.fb_users.fb_token.writable = db.fb_users.fb_token.readable = False
