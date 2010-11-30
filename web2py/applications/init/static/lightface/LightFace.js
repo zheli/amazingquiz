@@ -305,7 +305,7 @@ var LightFace = new Class({
 			boxSize = this.box.getSize();
 		this.box.setStyles({
 			left: scrollSize.x + ((windowSize.x - boxSize.x) / 2),
-			top: scrollSize.y + ((windowSize.y - boxSize.y) / 2)
+			top: scrollSize.y + ((windowSize.y - boxSize.y) * 0.2 / 2)
 		});
 		this._ie6Size();
 		return this;
