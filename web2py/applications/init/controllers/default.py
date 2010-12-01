@@ -30,22 +30,22 @@ def index():
             landing_url = landing_url)
 
 def quiz():
-    userScore = None
     try:
-        if request.vars['signed_request']:
-            if not updateUserInfo(request.vars['signed_request']):
-                return getFacebookAuth()
-            else:
-                userScore = getUserScore()
-    except:
+        if not updateUserInfo(request.vars['signed_request']):
+            return getFacebookAuth()
+        else:
+            characterIdFromLastResult = getCharacterIdFromLastResult()
+    except KeyError:
+        #When 'signed_request' is not provided
         return getFacebookAuth()
+
     response.title = APP_TITLE
     response.subtitle = 'Which family guy characters are you?'
-    if userScore:
-        character = db.characters[userScore]
-    else:
-        character = None
-    return dict(character=character, client_id = CLIENT_ID)
+    try:
+        userCharacter = db.characters[characterIdFromLastResult]
+    except:
+        userCharacter = None
+    return dict(character = userCharacter, client_id = CLIENT_ID)
 
 def analyzer():
     try:
@@ -162,12 +162,13 @@ def updateUserInfo(signed_request):
     else:
         if db.fb_users.insert(fb_uid = session.user_id, fb_token = session.oauth_token):
             return True
-
     return False
 
-def getUserScore():
-    userRecord = db(db.fb_users.fb_uid == session.user_id).select()
-    if not userRecord[0].character_id:
-        return None
-    else:
-        return userRecord[0].character_id
+def getCharacterIdFromLastResult():
+    return firstRecordCharacterId(sessionUserResultRecord())
+
+def sessionUserResultRecord():
+    return db(db.fb_users.fb_uid == session.user_id).select()
+
+def firstRecordCharacterId(record):
+    return record[0].character_id

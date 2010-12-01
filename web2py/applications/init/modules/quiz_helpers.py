@@ -11,3 +11,6 @@ def fbModalWindow(title, content):
         DIV(LABEL(INPUT(_value='Close', _type='button', _class='bClose'), 
             _class='popup_control_button'), _class='popup_control'),
         _id='popup_info', _style='display:none;')
+
+def getCharacterID(record):
+    return record[0].character.id

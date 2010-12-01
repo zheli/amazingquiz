@@ -1,5 +1,4 @@
 {{response.files.insert(4, 'https://ajax.googleapis.com/ajax/libs/mootools/1.3.0/mootools-yui-compressed.js')}}
-{{response.files.insert(5, URL(request.application,'static','jquery.bpopup-0.4.1.min.js'))}}
 {{response.files.insert(6, URL(request.application,'static','lightface/LightFace.js'))}}
 {{response.files.insert(7, URL(request.application,'static','lightface/LightFace.css'))}}
 {{extend 'mylayout.html'}}
@@ -37,7 +36,6 @@ _id='popup_info', _style='display:none;'
         box.open();
     }
     $(document).ready(function(){
-/*        $("#popup_info").bPopup({fadeSpeed: 50, modalClose: false}); */
         PublishResultFunction();
     });
 </script>
