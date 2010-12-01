@@ -42,10 +42,10 @@ def quiz():
     response.title = APP_TITLE
     response.subtitle = 'Which family guy characters are you?'
     try:
-        userCharacter = db.characters[characterIdFromLastResult]
+        session.userCharacter = db.characters[characterIdFromLastResult]
     except:
-        userCharacter = None
-    return dict(character = userCharacter, client_id = CLIENT_ID)
+        session.userCharacter = None
+    return dict(character = session.userCharacter, client_id = CLIENT_ID)
 
 def analyzer():
     try:
@@ -91,30 +91,20 @@ def update():
 def showResult():
     response.title = APP_TITLE
     response.subtitle = 'Result for %s' % 'Which family guy characters are you?'
-    from random import choice as randomChoice
-    #from quiz_helpers import findMaxScore
-    #score = {'a1': 0,
-    #        'a2' : 0,
-    #        'a3': 0,
-    #        'a4': 0,
-    #        }
-    #for i in request.vars:
-    #    answer = request.vars[i]
-    #    if answer == 'a1':
-    #        score['a1']  = score['a1'] + 1
-    #    elif answer == 'a2':
-    #        score['a2']   = score['a2']  + 1
-    #    elif answer == 'a3':
-    #        score['a3']  = score['a3'] + 1
-    #    elif answer == 'a4':
-    #        score['a4']  = score['a4'] + 1
-    #answer = findMaxScore(score)
-    #rows = db(db.characters.answer == answer).select()
-    allCharacters = db().select(db.characters.ALL)
-    randomResult = randomChoice(allCharacters)
+
+    session.userCharacter = getQuizResultCharacter()
+    updateUserCharacterInDB(session.userCharacter)
     return dict(client_id=CLIENT_ID, name=randomResult['name'],
             pic=randomResult['pic'],
             description=randomResult['description'])
+
+def getQuizResultCharacterId():
+    #TODO: make it related to quiz answes, or NOT?:)
+    from random import choice as randomChoice
+    allCharacters = db().select(db.characters.ALL)
+    return randomChoice(allCharacters)
+
+def updateSessionUserCharacter
 
 def showRequest():
     return BEAUTIFY(request)
@@ -172,3 +162,5 @@ def sessionUserResultRecord():
 
 def firstRecordCharacterId(record):
     return record[0].character_id
+
+def 
