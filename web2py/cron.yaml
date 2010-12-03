@@ -1,4 +1,4 @@
 cron:
 - description: ping website every 60 seconds
-  url: /init/default/quiz
+  url: /init/default/index
   schedule: every 1 minutes

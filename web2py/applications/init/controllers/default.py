@@ -31,7 +31,7 @@ def index():
 
 def quiz():
     try:
-        if not updateUserInfo(request.vars['signed_request']):
+        if not updateFBAuth(request.vars['signed_request']):
             return getFacebookAuth()
         else:
             characterIdFromLastResult = getCharacterIdFromLastResult()
@@ -91,20 +91,24 @@ def update():
 def showResult():
     response.title = APP_TITLE
     response.subtitle = 'Result for %s' % 'Which family guy characters are you?'
-
-    session.userCharacter = getQuizResultCharacter()
+    #TODO:replace the following line with something that to do with the submission
+    userCharacter = session.userCharacter = getQuizResultCharacter()
+    
     updateUserCharacterInDB(session.userCharacter)
-    return dict(client_id=CLIENT_ID, name=randomResult['name'],
-            pic=randomResult['pic'],
-            description=randomResult['description'])
+    return dict(client_id=CLIENT_ID, name=userCharacter['name'],
+            pic=userCharacter['pic'],
+            description=userCharacter['description'])
 
-def getQuizResultCharacterId():
+def getQuizResultCharacter():
     #TODO: make it related to quiz answes, or NOT?:)
     from random import choice as randomChoice
     allCharacters = db().select(db.characters.ALL)
     return randomChoice(allCharacters)
 
-def updateSessionUserCharacter
+def updateUserCharacterInDB(userCharacter):
+    
+    print userCharacter
+    return
 
 def showRequest():
     return BEAUTIFY(request)
@@ -144,15 +148,19 @@ def call():
     session.forget()
     return service()
 
-def updateUserInfo(signed_request):
+def updateFBAuth(signed_request):
     from fb_helpers import signed_request_getTokenWithID
     session.oauth_token, session.user_id = signed_request_getTokenWithID(signed_request, CLIENT_SECRET)
-    if db(db.fb_users.fb_uid == session.user_id).update(fb_token = session.oauth_token):
-        return True
-    else:
-        if db.fb_users.insert(fb_uid = session.user_id, fb_token = session.oauth_token):
-            return True
-    return False
+
+    if updateFBToken() != True:
+        addFBToken()
+
+def addFBToken():
+    db.fb_users.insert(fb_uid = session.user_id, fb_token = session.oauth_token)
+
+def updateFBToken():
+    return db(db.fb_users.fb_uid == session.user_id).update(fb_token = session.oauth_token):
+
 
 def getCharacterIdFromLastResult():
     return firstRecordCharacterId(sessionUserResultRecord())
@@ -162,5 +170,3 @@ def sessionUserResultRecord():
 
 def firstRecordCharacterId(record):
     return record[0].character_id
-
-def 
