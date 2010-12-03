@@ -106,9 +106,7 @@ def getQuizResultCharacter():
     return randomChoice(allCharacters)
 
 def updateUserCharacterInDB(userCharacter):
-    
-    print userCharacter
-    return
+    db(db.fb_users.fb_uid == session.user_id).update(character_id = userCharacter['id'])
 
 def showRequest():
     return BEAUTIFY(request)
@@ -150,16 +148,19 @@ def call():
 
 def updateFBAuth(signed_request):
     from fb_helpers import signed_request_getTokenWithID
-    session.oauth_token, session.user_id = signed_request_getTokenWithID(signed_request, CLIENT_SECRET)
-
-    if updateFBToken() != True:
-        addFBToken()
+    try:
+        session.oauth_token, session.user_id = signed_request_getTokenWithID(signed_request, CLIENT_SECRET)
+        if updateFBToken() != True:
+            addFBToken()
+    except:
+        return False
+    return True
 
 def addFBToken():
-    db.fb_users.insert(fb_uid = session.user_id, fb_token = session.oauth_token)
+    return db.fb_users.insert(fb_uid = session.user_id, fb_token = session.oauth_token)
 
 def updateFBToken():
-    return db(db.fb_users.fb_uid == session.user_id).update(fb_token = session.oauth_token):
+    return db(db.fb_users.fb_uid == session.user_id).update(fb_token = session.oauth_token)
 
 
 def getCharacterIdFromLastResult():
