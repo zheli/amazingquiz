@@ -1,0 +1,6 @@
+indexes:
+- kind: characters
+  properties:
+  - name: ID/Name
+  - name: name
+    direction: desc
