@@ -1,12 +1,11 @@
 {{response.files.insert(4, 'https://ajax.googleapis.com/ajax/libs/mootools/1.3.0/mootools-yui-compressed.js')}}
 {{response.files.insert(6, URL(request.application,'static','lightface/LightFace.js'))}}
-{{response.files.insert(7, URL(request.application,'static','lightface/LightFace.Request.js'))}}
-{{response.files.insert(8, URL(request.application,'static','lightface/LightFace.css'))}}
+{{response.files.insert(7, URL(request.application,'static','lightface/LightFace.css'))}}
 {{extend 'mylayout.html'}}
 
-{{=DIV(B('You are %s.' % name), BR(),
-IMG(_src=pic, _height=200), BR(),
-P(description), _id='quiz_result')}}
+{{=DIV(DIV(IMG(_src=pic, _height=200)),
+DIV(P(B('You are %s.' % name)),
+P(description)), _id='quiz_result')}}
 <script>
     function PublishResultFunction() {
         box = new LightFace({

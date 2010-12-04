@@ -1,7 +1,7 @@
+{{response.files.insert(4, 'https://ajax.googleapis.com/ajax/libs/mootools/1.3.0/mootools-yui-compressed.js')}}
+{{response.files.insert(6, URL(request.application,'static','lightface/LightFace.js'))}}
+{{response.files.insert(7, URL(request.application,'static','lightface/LightFace.css'))}}
 {{extend 'mylayout.html'}}
-{{if character:}}
-{{=B('You already did it, %s' % character['name'])}}
-{{pass}}
         <form name="quiz" action="{{=URL(f='showResult')}}" method="post">
             <ol>
                 <li><p>You are thirsty and want a drink, what will you do?</p>
@@ -44,3 +44,30 @@
             </ol>
             <input type="submit">
         </form>
+{{if character:}}
+<script>
+    function PublishResultFunction() {
+        box = new LightFace({
+            title: 'Information',
+            width: 480,
+            height: 150,
+            content: '{{=DIV(DIV(IMG(_src=character['pic']), _id="result_picture"), DIV(P("You already did the quiz ", B("%s!" % character['name']), BR(), BR(), "Wanna do it again?"), _id="result_text"), _id="result_wrapper")}}',
+            buttons:[
+                {
+                    title: 'Yes',
+                    event: function() {this.close();},
+                    color: 'green',
+                },
+                {
+                    title: 'No',
+                    event: function() {this.close();},
+                }
+            ]
+        });
+        box.open();
+    }
+    $(document).ready(function(){
+        PublishResultFunction();
+    });
+</script>
+{{pass}}
