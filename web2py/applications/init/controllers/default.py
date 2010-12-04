@@ -10,7 +10,6 @@
 # TODO: finish getFacebookAuth()
 
 from facebook import GraphAPI, GraphAPIError
-#from fb_helpers import parse_signed_request, signed_request_getTokenWithID
 import fb_helpers
 
 def index():
@@ -108,9 +107,6 @@ def getQuizResultCharacter():
 def updateUserCharacterInDB(userCharacter):
     db(db.fb_users.fb_uid == session.user_id).update(character_id = userCharacter['id'])
 
-def showRequest():
-    return BEAUTIFY(request)
-
 def user():
     """
     exposes:
@@ -146,6 +142,7 @@ def call():
     session.forget()
     return service()
 
+
 def updateFBAuth(signed_request):
     from fb_helpers import signed_request_getTokenWithID
     try:
@@ -156,8 +153,10 @@ def updateFBAuth(signed_request):
         return False
     return True
 
+
 def addFBToken():
     return db.fb_users.insert(fb_uid = session.user_id, fb_token = session.oauth_token)
+
 
 def updateFBToken():
     return db(db.fb_users.fb_uid == session.user_id).update(fb_token = session.oauth_token)
@@ -166,8 +165,15 @@ def updateFBToken():
 def getCharacterIdFromLastResult():
     return firstRecordCharacterId(sessionUserResultRecord())
 
+
 def sessionUserResultRecord():
     return db(db.fb_users.fb_uid == session.user_id).select()
 
+
 def firstRecordCharacterId(record):
     return record[0].character_id
+
+def getResultWrapper(character_id):
+    imageUrl 
+    return DIV(DIV(IMG(_src=imageUrl), _id="result_picture"), \
+    DIV(P(characterDescription), _id="result_text"), _id="result_wrapper")
