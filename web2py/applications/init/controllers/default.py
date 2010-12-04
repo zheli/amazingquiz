@@ -171,9 +171,12 @@ def sessionUserResultRecord():
 
 
 def firstRecordCharacterId(record):
-    return record[0].character_id
+    return record.first().character_id
 
-def getResultWrapper(character_id):
-    imageUrl 
+def getResultWrapper():
+    character_id = request.vars['character_id']
+    character = db.characters[character_id]
+    imageUrl = character.pic
+    description = character.description
     return DIV(DIV(IMG(_src=imageUrl), _id="result_picture"), \
-    DIV(P(characterDescription), _id="result_text"), _id="result_wrapper")
+    DIV(P(description), _id="result_text"), _id="result_wrapper")

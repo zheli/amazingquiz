@@ -71,18 +71,25 @@ line-height: normal !important;
 #result_wrapper {
 height: 100%;
 width: 100%;
-padding: 10px, 10px, 10px, 10px;
 }
 #result_picture {
 float: left;
-width: 152px;
+height: auto;
+width: 38%;
 }
 #result_picture img{
 width: 100%;
 height: auto;
 }
 #result_text {
+margin-top: 0;
+margin-bottom: 0;
 padding-left: 5px;
+width: 61%;
 float: left;
-width: auto;
+text-align: center;
+vertical-align: middle;
+}
+#result_text p {
+margin: 0;
 }

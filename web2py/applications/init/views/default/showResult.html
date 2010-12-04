@@ -9,11 +9,11 @@ IMG(_src=pic, _height=200), BR(),
 P(description), _id='quiz_result')}}
 <script>
     function PublishResultFunction() {
-        box = new LightFace.Request({
+        box = new LightFace({
             title: 'Quiz Result',
-            width: 400,
-            height: 100,
-            content: "This is just a test",
+            width: 480,
+            height: 150,
+            content: '{{=DIV(DIV(IMG(_src=pic), _id="result_picture"), DIV(P(B("You are %s" % name)), P(description), _id="result_text"), _id="result_wrapper")}}',
             buttons:[
                 {
                     title: 'Publish',
