@@ -3,6 +3,9 @@ version: 3
 api_version: 1
 runtime: python
 
+builtins:
+- datastore_admin: on
+
 derived_file_type:
 - python_precompiled
 

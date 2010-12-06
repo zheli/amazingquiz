@@ -16,7 +16,13 @@ P(description)), _id='quiz_result')}}
             buttons:[
                 {
                     title: 'Publish',
-                    event: function() {this.close();},
+                    event: function() {
+                        var publishResultRequest = new Request({
+                            url: '{{=URL('default', 'publishResult')}}',
+                        });
+                        publishResultRequest.send();
+                        this.close();
+                    },
                     color: 'blue',
                 },
                 {

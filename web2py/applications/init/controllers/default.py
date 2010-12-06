@@ -61,32 +61,22 @@ def analyzer():
     return BEAUTIFY([currentUserInfo])
 
 def publishResult():
-    user = facebook.get_user_from_cookie(request.cookies, CLIENT_ID, CLIENT_SECRET)
-    return user
-    #graph = getGraph()
-    #try:
-    #    graph.put_object('me', 'feed', 
-    #            message='just got the antivirus superhero badge!',
-    #            picture=request.env.http_host + URL(r=request, c='static', f='pics/superman.png'),
-    #            name='%s is the antivirus hero!' % user['first_name'], caption='Antivirus Heroes',
-    #            link='http://apps.facebook.com/antivirusheroes/',
-    #            description='Get the highest score by killing the most virus!',
-    #            actions={'name':'Submit your Ad-Aware log file',
-    #            'link':'http://apps.facebook.com/antivirusheroes/'}
-    #            )
-    #except GraphAPIError, e:
-    #    response.flash = "%s [%s: %s]" % (T("Errors! Logging you out!"),__name__, e)
-    #    redirect(auth.url(f='user', args='logout')
-    try:
-        signed_request = parse_signed_request(request.vars['signed_request'], CLIENT_SECRET)
-    except:
-        redirect_uri="redirect_uri=http://apps.facebook.com/antivirusheroes/default/update&"
-        login_url="https://graph.facebook.com/oauth/authorize?client_id=139729456078929&" + redirect_uri + "scope=user_photos,publish_stream&"
-        return '<script>top.location.href="' + login_url + '";</script>'
-    
-    graph = GraphAPI(access_token = signed_request['oauth_token'])
-    return BEAUTIFY([request, signed_request])
-    #redirect('http://www.facebook.com/')
+    if session.oauth_token:
+        graph = facebook.GraphAPI(session.oauth_token)
+        user = graph.get_object('me')
+        graph.put_object('me', 'feed', 
+                message='just finished a quiz using Amazing Quiz!',
+                picture= session.userCharacter['pic'], caption= '',
+                name='%s is %s' % (user['first_name'], session.userCharacter['name']),
+                link='http://apps.facebook.com/amazing_quiz/',
+                description= session.userCharacter['description'],
+                actions={'name':'Check who are you',
+                'link':'http://apps.facebook.com/amazing_quiz/'}
+                )
+        return True
+    else:
+        return None
+
 
 def showResult():
     response.title = APP_TITLE
@@ -97,7 +87,8 @@ def showResult():
     updateUserCharacterInDB(session.userCharacter)
     return dict(client_id=CLIENT_ID, name=userCharacter['name'],
             pic=userCharacter['pic'],
-            description=userCharacter['description'])
+            description=userCharacter['description'],
+            characterId = userCharacter['id'])
 
 def getQuizResultCharacter():
     #TODO: make it related to quiz answes, or NOT?:)
