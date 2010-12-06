@@ -9,7 +9,7 @@
 
 # TODO: finish getFacebookAuth()
 
-from facebook import GraphAPI, GraphAPIError
+import facebook
 import fb_helpers
 
 def index():
@@ -60,8 +60,9 @@ def analyzer():
     currentUserFriends = graph.get_connections('me', 'friends')
     return BEAUTIFY([currentUserInfo])
 
-def update():
-    #user = auth.user
+def publishResult():
+    user = facebook.get_user_from_cookie(request.cookies, CLIENT_ID, CLIENT_SECRET)
+    return user
     #graph = getGraph()
     #try:
     #    graph.put_object('me', 'feed', 
