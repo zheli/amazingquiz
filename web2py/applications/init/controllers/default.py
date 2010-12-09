@@ -192,7 +192,7 @@ def getUserFriendsInQuizUsers():
     userFriends = getUserFriends()
     friendUsers = []
     for userFriend in userFriends:
-        if userFriend[u'id'] in QuizUsers:
+        if userFriend[u'id'] in quizUsers:
             friendUsers.append(userFriend[u'id'])
     logging.debug('friendUsers: %s' % friendUsers)
     return friendUsers
