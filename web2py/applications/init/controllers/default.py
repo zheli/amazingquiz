@@ -11,6 +11,8 @@
 
 import facebook
 import fb_helpers
+import logging
+logging.getLogger().setLevel(logging.DEBUG)
 
 def index():
     """
@@ -165,6 +167,7 @@ def sessionUserResultRecord():
 def firstRecordCharacterId(record):
     return record.first().character_id
 
+
 def getResultWrapper():
     character_id = request.vars['character_id']
     character = db.characters[character_id]
@@ -172,3 +175,37 @@ def getResultWrapper():
     description = character.description
     return DIV(DIV(IMG(_src=imageUrl), _id="result_picture"), \
     DIV(P(description), _id="result_text"), _id="result_wrapper")
+
+
+def getFriendUsersResultWrapper():
+    friendUsers = getUserFriendsInQuizUsers()
+    graph = facebook.GraphAPI(session.oauth_token)
+    wrapContent = ''
+    for user in friendUsers:
+        wrapContent = wrapContent + IMG(user['pic_square'])
+    logging.debug('WrapContent: %s' % wrapContent)
+    return wrapContent
+
+
+def getUserFriendsInQuizUsers():
+    quizUsers = getQuizUsers()
+    userFriends = getUserFriends()
+    friendUsers = []
+    for userFriend in userFriends:
+        if userFriend[u'id'] in QuizUsers:
+            friendUsers.append(userFriend[u'id'])
+    logging.debug('friendUsers: %s' % friendUsers)
+    return friendUsers
+
+    
+def getUserFriends():
+    graph = facebook.GraphAPI(session.oauth_token)
+    friends = graph.get_connections("me", "friends")
+    logging.debug('UserFriends: %s' % friends)
+    return friends[u'data']
+
+
+def getQuizUsers():
+    QuizUsers = db().select(db.fb_users.ALL, orderby=db.fb_users.fb_uid)
+    logging.debug('QuizUsers: %s' % QuizUsers)
+    return QuizUsers
