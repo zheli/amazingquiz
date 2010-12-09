@@ -179,12 +179,16 @@ def getResultWrapper():
 
 def getFriendUsersResultWrapper():
     friendUsers = getUserFriendsInQuizUsers()
-    graph = facebook.GraphAPI(session.oauth_token)
-    wrapContent = ''
+    wrapContent = []
     for user in friendUsers:
-        wrapContent = wrapContent + IMG(user['pic_square'])
-    logging.debug('WrapContent: %s' % wrapContent)
-    return wrapContent
+        photoUrl = u'https://graph.facebook.com/%s/picture?type=large' % user
+        userRecord = db(db.fb_users.fb_uid == user).select(db.fb_users.ALL, orderby=db.fb_users.fb_uid).first()
+        logging.debug(userRecord)
+        userCharacter = db.characters[userRecord['character_id']]
+        characterPhotoUrl = userCharacter.pic
+        logging.debug(characterPhotoUrl)
+        wrapContent.append(DIV(IMG(_src = photoUrl, _height=120), IMG(_src = characterPhotoUrl, _height=120)))
+    return BEAUTIFY(wrapContent)
 
 
 def getUserFriendsInQuizUsers():
@@ -194,18 +198,19 @@ def getUserFriendsInQuizUsers():
     for userFriend in userFriends:
         if userFriend[u'id'] in quizUsers:
             friendUsers.append(userFriend[u'id'])
-    logging.debug('friendUsers: %s' % friendUsers)
     return friendUsers
 
-    
+
 def getUserFriends():
+    friendList = []
     graph = facebook.GraphAPI(session.oauth_token)
     friends = graph.get_connections("me", "friends")
-    logging.debug('UserFriends: %s' % friends)
     return friends[u'data']
 
 
 def getQuizUsers():
+    userList = []
     QuizUsers = db().select(db.fb_users.ALL, orderby=db.fb_users.fb_uid)
-    logging.debug('QuizUsers: %s' % QuizUsers)
-    return QuizUsers
+    for user in QuizUsers:
+        userList.append(unicode(user['fb_uid']))
+    return userList
