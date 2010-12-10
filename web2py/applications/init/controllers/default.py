@@ -181,14 +181,15 @@ def getFriendUsersResultWrapper():
     friendUsers = getUserFriendsInQuizUsers()
     wrapContent = []
     for user in friendUsers:
-        photoUrl = u'https://graph.facebook.com/%s/picture?type=large' % user
+        photoUrl = u'https://graph.facebook.com/%s/picture?type=square' % user
         userRecord = db(db.fb_users.fb_uid == user).select(db.fb_users.ALL, orderby=db.fb_users.fb_uid).first()
         logging.debug(userRecord)
         userCharacter = db.characters[userRecord['character_id']]
         characterPhotoUrl = userCharacter.pic
         logging.debug(characterPhotoUrl)
         wrapContent.append(DIV(IMG(_src = photoUrl, _height=120), IMG(_src = characterPhotoUrl, _height=120)))
-    return BEAUTIFY(wrapContent)
+    return dict(wrappedResult = wrapContent,
+            client_id = CLIENT_ID)
 
 
 def getUserFriendsInQuizUsers():
