@@ -6,6 +6,8 @@
 {{=DIV(DIV(IMG(_src=pic, _height=200)),
 DIV(P(B('You are %s.' % name)),
 P(description)), _id='quiz_result')}}
+<div id="friendResultWrap">
+</div>
 <script>
     function PublishResultFunction() {
         box = new LightFace({
@@ -32,6 +34,7 @@ P(description)), _id='quiz_result')}}
             ]
         });
         box.open();
+        $("#friendResultWrap").load('{{=URL('getFriendUsersResultWrapper')}}');
     }
     $(document).ready(function(){
         PublishResultFunction();
