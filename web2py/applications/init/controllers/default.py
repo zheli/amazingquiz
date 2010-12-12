@@ -48,19 +48,24 @@ def quiz():
         session.userCharacter = None
     return dict(character = session.userCharacter, client_id = CLIENT_ID)
 
-def analyzer():
-    try:
-        signed_request = parse_signed_request(request.vars['signed_request'], CLIENT_SECRET)
-    except:
-        from urllib import urlencode
-        query = dict(client_id = CLIENT_ID, scope=APP_SCOPE, 
-                redirect_uri=APP_URL+URL(c='default', f='analyzer'))
-        login_url=FB_AUTH_URL + urlencode(query)
-        return '<script>top.location.href="' + login_url + '";</script>'
-    graph = GraphAPI(access_token = signed_request['oauth_token'])
-    currentUserInfo = graph.get_object('me')
-    currentUserFriends = graph.get_connections('me', 'friends')
-    return BEAUTIFY([currentUserInfo])
+
+def otherOffers():
+    friendUsers = getUserFriendsInQuizUsers()
+    wrapContent = []
+    for user in friendUsers:
+        photoUrl = u'https://graph.facebook.com/%s/picture?type=square' % user
+        userRecord = db(db.fb_users.fb_uid == user).select(db.fb_users.ALL, orderby=db.fb_users.fb_uid).first()
+        logging.debug(userRecord)
+        userCharacter = db.characters[userRecord['character_id']]
+        characterPhotoUrl = userCharacter.pic
+        logging.debug(characterPhotoUrl)
+        wrapContent.append(DIV(A(SPAN(_style="background: url('%s') no-repeat;" % photoUrl),
+                                  IMG(_src = characterPhotoUrl),
+                                   _onClick='top.location.href = "http://www.facebook.com/profile.php?id=%s";' % user,
+                                   _href='#'),
+                                    _class='friendResultPhoto'))
+    return dict(wrappedResult = wrapContent)
+
 
 def publishResult():
     if session.oauth_token:
@@ -92,14 +97,17 @@ def showResult():
             description=userCharacter['description'],
             characterId = userCharacter['id'])
 
+
 def getQuizResultCharacter():
     #TODO: make it related to quiz answes, or NOT?:)
     from random import choice as randomChoice
     allCharacters = db().select(db.characters.ALL)
     return randomChoice(allCharacters)
 
+
 def updateUserCharacterInDB(userCharacter):
     db(db.fb_users.fb_uid == session.user_id).update(character_id = userCharacter['id'])
+
 
 def user():
     """
