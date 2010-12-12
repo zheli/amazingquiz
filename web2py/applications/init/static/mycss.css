@@ -93,3 +93,31 @@ vertical-align: middle;
 #result_text p {
 margin: 0;
 }
+.friendResultPhoto {
+	margin: 30px;
+	position: relative;
+	width: 180px;
+	height: 130px;
+	float: left;
+}
+
+.friendResultPhoto img {
+	background: #fff;
+	border: solid 1px #ccc;
+	padding: 4px;
+	height: 130px;
+	z-index: 999;
+}
+
+.friendResultPhoto span {
+	width: 50px;
+	height: 50px;
+	display: block;
+	position: absolute;
+	bottom: 12px;
+	right: 32px;
+}
+
+.friendResultPhoto a {
+	text-decoration: none;
+}

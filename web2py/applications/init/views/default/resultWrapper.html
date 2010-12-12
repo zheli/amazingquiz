@@ -1,8 +1,53 @@
-<div id="result_wrapper">
-    <div id="result_picture">
-        <img src="peter.jpg" style="width: 100%; height: auto;" />
-    </div>
-    <div id="result_text" style="padding-left: 5px; float: left; width: auto;">
-        <p>blablabla</p>
-    </div>
-</div>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml"> 
+<head> 
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /> 
+<title>Demos | CSS Decorative Gallery</title>
+<style type="text/css"> 
+img {
+	border: none;
+}
+/* ---------- gallery styles start here ----------------------- */
+.photo {
+	margin: 30px;
+	position: relative;
+	width: 180px;
+	height: 130px;
+	float: left;
+}
+.photo img {
+	background: #fff;
+	border: solid 1px #ccc;
+	padding: 4px;
+}
+.photo span {
+	width: 20px;
+	height: 18px;
+	display: block;
+	position: absolute;
+	top: 12px;
+	left: 12px;
+	background: url(images/digg-style.gif) no-repeat;
+}
+.photo a {
+	text-decoration: none;
+}
+ 
+.sample1 span {
+	width: 28px;
+	height: 21px;
+	display: block;
+	position: absolute;
+	top: -12px;
+	left: 90px;
+	background: url(images/pin.png) no-repeat;
+}
+</style>
+</head>
+<body> 
+<h1>CSS Decorative Gallery / Demos</h1> 
+<div class="photo"> 
+	<a href="#"><span></span><img src="" alt="image" /></a> 
+</div> 
+</body>
+</html>

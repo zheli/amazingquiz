@@ -1,2 +1,6 @@
-{{extend 'mylayout.html'}}
-{{=wrappedResult}}
+{{if wrappedResult:}}
+<h2>Check out what your friends all got:</h2>
+{{for content in wrappedResult:}}
+{{=content}}
+{{pass}}
+{{pass}}

@@ -187,9 +187,12 @@ def getFriendUsersResultWrapper():
         userCharacter = db.characters[userRecord['character_id']]
         characterPhotoUrl = userCharacter.pic
         logging.debug(characterPhotoUrl)
-        wrapContent.append(DIV(IMG(_src = photoUrl, _height=120), IMG(_src = characterPhotoUrl, _height=120)))
-    return dict(wrappedResult = wrapContent,
-            client_id = CLIENT_ID)
+        wrapContent.append(DIV(A(SPAN(_style="background: url('%s') no-repeat;" % photoUrl),
+                                  IMG(_src = characterPhotoUrl),
+                                   _onClick='top.location.href = "http://www.facebook.com/profile.php?id=%s";' % user,
+                                   _href='#'),
+                                    _class='friendResultPhoto'))
+    return dict(wrappedResult = wrapContent)
 
 
 def getUserFriendsInQuizUsers():
