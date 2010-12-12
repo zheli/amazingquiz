@@ -64,7 +64,7 @@ def otherOffers():
                                    _onClick='top.location.href = "http://www.facebook.com/profile.php?id=%s";' % user,
                                    _href='#'),
                                     _class='friendResultPhoto'))
-    return dict(wrappedResult = wrapContent)
+    return dict(client_id = CLIENT_ID, wrappedResult = wrapContent)
 
 
 def publishResult():
