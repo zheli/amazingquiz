@@ -50,6 +50,8 @@ def quiz():
 
 
 def otherOffers():
+    response.title = APP_TITLE
+    response.subtitle = "Check out your friend's result"
     friendUsers = getUserFriendsInQuizUsers()
     wrapContent = []
     for user in friendUsers:
