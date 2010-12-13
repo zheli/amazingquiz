@@ -50,6 +50,13 @@ def quiz():
 
 
 def otherOffers():
+    try:
+        if not updateFBAuth(request.vars['signed_request']):
+            return getFacebookAuth()
+    except KeyError:
+        #When 'signed_request' is not provided
+        return getFacebookAuth()
+
     response.title = APP_TITLE
     response.subtitle = "Check out your friend's result"
     friendUsers = getUserFriendsInQuizUsers()
