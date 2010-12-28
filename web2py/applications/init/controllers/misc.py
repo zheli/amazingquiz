@@ -6,7 +6,7 @@ def push_greetings():
     #updateFBAuth(request.vars['signed_request'])
     graph = facebook.GraphAPI(session.app_token)
     user = graph.get_object('171657759516876')
-    graph.put_object('171657759516876', 'feed',
+    graph.put_object('100001781330977', 'feed',
             message='',
             picture= 'http://www.familyguyfun.com/images/31dd.jpg', caption= '',
             name='Greetings from Amazing Quiz!',
