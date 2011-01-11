@@ -11,6 +11,10 @@ derived_file_type:
 
 handlers:
 
+- url: /favicon.ico
+  static_files: static/images/favicon.ico
+  upload: static/images/favicon.ico
+
 - url: /_ah/stats.*
   script: $PYTHON_LIB/google/appengine/ext/appstats/ui.py
   login: admin
@@ -33,9 +37,6 @@ handlers:
   script: gaehandler.py  
   secure: optional
 
-- url: /favicon.ico
-  static_files: static/images/favicon.ico
-  upload: static/images/favicon.ico
 
 admin_console:
   pages:
