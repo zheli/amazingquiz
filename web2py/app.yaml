@@ -33,6 +33,10 @@ handlers:
   script: gaehandler.py  
   secure: optional
 
+- url: /favicon.ico
+  static_files: static/images/favicon.ico
+  upload: static/images/favicon.ico
+
 admin_console:
   pages:
   - name: Appstats
