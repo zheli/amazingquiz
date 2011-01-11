@@ -7,8 +7,6 @@
 ## - call exposes all registered services (none by default)
 #########################################################################
 
-# TODO: finish getFacebookAuth()
-
 import facebook
 import fb_helpers
 import logging
@@ -30,15 +28,23 @@ def index():
     return dict(client_id = CLIENT_ID, login_url = XML(login_url), 
             landing_url = landing_url)
 
+def redirect_to_auth_page():
+    from urllib import urlencode, unquote_plus
+    landing_url = APP_URL+URL(c='default', f='quiz')
+    query = dict(client_id = CLIENT_ID, scope=APP_SCOPE, 
+            redirect_uri=landing_url)
+    login_url=unquote_plus(FB_AUTH_URL + urlencode(query))
+    return r'<script>top.location.href="%s"</script>' % login_url
+
 def quiz():
     try:
         if not updateFBAuth(request.vars['signed_request']):
-            return getFacebookAuth()
+            return redirect_to_auth_page()
         else:
             characterIdFromLastResult = getCharacterIdFromLastResult()
     except KeyError:
         #When 'signed_request' is not provided
-        return getFacebookAuth()
+        return redirect_to_auth_page()
 
     response.title = APP_TITLE
     response.subtitle = 'Which family guy characters are you?'
