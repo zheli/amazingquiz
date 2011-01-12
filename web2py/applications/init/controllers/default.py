@@ -68,21 +68,19 @@ def otherOffers():
     friendUsers = getUserFriendsInQuizUsers()
     wrapContent = []
     for user in friendUsers:
-        try:
-            photoUrl = u'https://graph.facebook.com/%s/picture?type=square' % user
-            userRecord = db(db.fb_users.fb_uid == user).select(db.fb_users.ALL, orderby=db.fb_users.fb_uid).first()
-            logging.debug(userRecord)
+        photoUrl = u'https://graph.facebook.com/%s/picture?type=square' % user
+        userRecord = db(db.fb_users.fb_uid == user).select(db.fb_users.ALL, orderby=db.fb_users.fb_uid).first()
+        logging.debug(userRecord)
+        if userRecord['character_id']:
             userCharacter = db.characters[userRecord['character_id']]
             characterPhotoUrl = userCharacter.pic
             logging.debug(characterPhotoUrl)
             wrapContent.append(DIV(A(SPAN(_style="background: url('%s') no-repeat;" % photoUrl),
                                       IMG(_src = characterPhotoUrl),
-                                       _onClick='top.location.href = "http://www.facebook.com/profile.php?id=%s";' % user,
+                                       _onClick='top.location.href = "http://www.facebook.com/profile.php?id=%s";' \
+                                               % user,
                                        _href='#'),
                                         _class='friendResultPhoto'))
-        except AttributeError:
-            logging.error('User [%s] has AttributeError!' % user)
-            pass
         
     return dict(client_id = CLIENT_ID, wrappedResult = wrapContent)
 
@@ -209,21 +207,19 @@ def getFriendUsersResultWrapper():
     friendUsers = getUserFriendsInQuizUsers()
     wrapContent = []
     for user in friendUsers:
-        try:
-            photoUrl = u'https://graph.facebook.com/%s/picture?type=square' % user
-            userRecord = db(db.fb_users.fb_uid == user).select(db.fb_users.ALL, orderby=db.fb_users.fb_uid).first()
-            logging.debug(userRecord)
+        photoUrl = u'https://graph.facebook.com/%s/picture?type=square' % user
+        userRecord = db(db.fb_users.fb_uid == user).select(db.fb_users.ALL, orderby=db.fb_users.fb_uid).first()
+        logging.debug(userRecord)
+        if userRecord['character_id']:
             userCharacter = db.characters[userRecord['character_id']]
             characterPhotoUrl = userCharacter.pic
             logging.debug(characterPhotoUrl)
             wrapContent.append(DIV(A(SPAN(_style="background: url('%s') no-repeat;" % photoUrl),
                                       IMG(_src = characterPhotoUrl),
-                                       _onClick='top.location.href = "http://www.facebook.com/profile.php?id=%s";' % user,
+                                       _onClick='top.location.href = "http://www.facebook.com/profile.php?id=%s";' \
+                                               % user,
                                        _href='#'),
                                         _class='friendResultPhoto'))
-        except AttributeError:
-            logging.error('User [%s] has AttributeError!' % user)
-            pass
         
     return dict(wrappedResult = wrapContent)
 
