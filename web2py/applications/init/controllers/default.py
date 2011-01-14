@@ -228,15 +228,21 @@ def getUserFriendsInQuizUsers():
     quizUsers = getQuizUsers()
     userFriends = getUserFriends()
     friendUsers = []
-    for userFriend in userFriends:
-        if userFriend[u'id'] in quizUsers:
-            friendUsers.append(userFriend[u'id'])
+    if userFriends:
+        for userFriend in userFriends:
+            if userFriend[u'id'] in quizUsers:
+                friendUsers.append(userFriend[u'id'])
     return friendUsers
 
 
 def getUserFriends():
     friendList = []
-    graph = facebook.GraphAPI(session.oauth_token)
+    try:
+        graph = facebook.GraphAPI(session.oauth_token)
+    except GraphAPIError:
+        logging.error('GraphAPIError! user_id: [%s] token: [%s]' % (session.user_id, session.oauth_token))
+        return None
+
     friends = graph.get_connections("me", "friends")
     return friends[u'data']
 
