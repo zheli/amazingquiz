@@ -183,10 +183,6 @@ def updateFBAuth(signed_request):
 
     return True
 
-def get_token_from_cookie():
-    return facebook.get_user_from_cookie(request.cookies, CLIENT_ID, CLIENT_SECRET))
-
-
 def addFBToken():
     return db.fb_users.insert(fb_uid = session.user_id, fb_token = session.oauth_token)
 
