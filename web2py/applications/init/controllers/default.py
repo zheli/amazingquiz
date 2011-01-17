@@ -166,17 +166,29 @@ def call():
 def updateFBAuth(signed_request):
     from fb_helpers import signed_request_getTokenWithID
     try:
-        session.oauth_token, session.user_id = signed_request_getTokenWithID(signed_request, CLIENT_SECRET)
-        if updateFBToken() != True:
+        token_dict = facebook.get_user_from_cookie(request.cookies, CLIENT_ID, CLIENT_SECRET)
+        session.user_id = token_dict['uid']
+        session.oauth_token = token_dict['access_token']
+    except:
+        try:
+            session.oauth_token, session.user_id = signed_request_getTokenWithID(signed_request,\
+                    CLIENT_SECRET)
+        except:
+            return False
+    try:
+        if not updateFBToken():
             addFBToken()
     except:
         return False
+
     return True
+
+def get_token_from_cookie():
+    return facebook.get_user_from_cookie(request.cookies, CLIENT_ID, CLIENT_SECRET))
 
 
 def addFBToken():
     return db.fb_users.insert(fb_uid = session.user_id, fb_token = session.oauth_token)
-
 
 def updateFBToken():
     return db(db.fb_users.fb_uid == session.user_id).update(fb_token = session.oauth_token)
