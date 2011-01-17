@@ -240,7 +240,7 @@ def getUserFriends():
     try:
         graph = facebook.GraphAPI(session.oauth_token)
         friends = graph.get_connections("me", "friends")
-    except GraphAPIError:
+    except facebook.GraphAPIError:
         logging.error('GraphAPIError! user_id: [%s] token: [%s]' % (session.user_id, session.oauth_token))
         friends = { u'data': None }
         return None
